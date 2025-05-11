@@ -2,8 +2,6 @@
 session_start();
 require_once("../Template/header.php");
 require_once("../../db_connection/db_conn.php");
-
-
 ?>
 
 <!DOCTYPE html>
@@ -42,24 +40,6 @@ require_once("../../db_connection/db_conn.php");
                                     <i class='bx bx-x'></i>
                                 </button>
                             </div>
-                        </div>
-                        <div class="col-md-3">
-                            <select id="statusFilter" class="form-select">
-                                <option value="">Tous les statuts</option>
-                                <option value="Valide">Valide</option>
-                                <option value="Expiree">Expirée</option>
-                                <option value="Liberee">Libérée</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <select id="sortSelect" class="form-select">
-                                <option value="date_creation_desc">Date création (récent)</option>
-                                <option value="date_creation_asc">Date création (ancien)</option>
-                                <option value="date_validite_asc">Date validité (croissant)</option>
-                                <option value="date_validite_desc">Date validité (décroissant)</option>
-                                <option value="montant_desc">Montant (décroissant)</option>
-                                <option value="montant_asc">Montant (croissant)</option>
-                            </select>
                         </div>
                     </div>
                 </div>
