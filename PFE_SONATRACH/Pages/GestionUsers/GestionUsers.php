@@ -43,18 +43,15 @@ require_once("../../db_connection/db_conn.php");
                         </div>
                     </div>
                 </div>
-
                 <div class="table-responsive">
                     <table class="table table-hover" id="garantiesTable">
                         <thead>
                             <tr>
-                                <th class="sortable" data-sort="num_garantie">Numéro <i class='bx bx-sort'></i></th>
-                                <th class="sortable" data-sort="date_creation">Date Création <i class='bx bx-sort'></i></th>
-                                <th class="sortable" data-sort="date_validite">Validité <i class='bx bx-sort'></i></th>
-                                <th class="sortable" data-sort="montant">Montant <i class='bx bx-sort'></i></th>
-                                <th class="sortable" data-sort="direction">Direction <i class='bx bx-sort'></i></th>
-                                <th class="sortable" data-sort="fournisseur">Fournisseur <i class='bx bx-sort'></i></th>
-                                <th class="sortable" data-sort="statut">Statut <i class='bx bx-sort'></i></th>
+                                <th class="sortable" data-sort="num_garantie">Nom Complet <i class='bx bx-sort'></i></th>
+                                <th class="sortable" data-sort="date_creation">User Name <i class='bx bx-sort'></i></th>
+                                <th class="sortable" data-sort="date_validite">Compte <i class='bx bx-sort'></i></th>
+                                <th class="sortable" data-sort="montant">Mot de passe <i class='bx bx-sort'></i></th>
+                                <th class="sortable" data-sort="direction">Structure <i class='bx bx-sort'></i></th>
                                 <th class="text-center">Actions</th>
                             </tr>
                         </thead>
@@ -65,10 +62,7 @@ require_once("../../db_connection/db_conn.php");
             </div>
         </div>
     </div>
-
-
 </body>
-
 </html>
 
 <?php
