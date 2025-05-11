@@ -15,17 +15,15 @@ require_once("../../db_connection/db_conn.php");
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="GestionUsers.css">
 </head>
-
 <body>
     <div class="listegarantie-container">
-
         <div class="card shadow-sm mb-4">
             <div class="card-header d-flex justify-content-between align-items-center py-3">
                 <h2 class="text-primary">
                     <i class='bx bx-shield me-2'></i>Liste des Users
                 </h2>
                 <a href="add_garantie.php" class="btn btn-add d-flex align-items-center">
-                    <i class='bx bx-plus-circle me-2'></i>Ajouter une garantie
+                    <i class='bx bx-plus-circle me-2'></i>Ajouter un user
                 </a>
             </div>
             <div class="card-body">
@@ -56,6 +54,7 @@ require_once("../../db_connection/db_conn.php");
                             </tr>
                         </thead>
                         <tbody>
+
                         </tbody>
                     </table>
                 </div>
