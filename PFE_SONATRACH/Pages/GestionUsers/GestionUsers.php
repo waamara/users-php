@@ -10,11 +10,12 @@ require_once("../../db_connection/db_conn.php");
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liste des Users</title>
+    <link rel="stylesheet" href="GestionUsers.css">
 </head>
 <body>
     <div>
         <h2>Liste des Users</h2>
-        <a href="">Ajouter un User</a>
+        <a href="">Ajouter un User</a> 
     </div>
 
     <div>
