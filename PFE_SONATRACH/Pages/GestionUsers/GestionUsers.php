@@ -47,23 +47,39 @@ require_once("../../db_connection/db_conn.php");
             <span id="closeFormBtn" class="close-btn">&times;</span>
             <h3>Ajouter un Nouveau User</h3>
             <form id="userForm">
-                <label>Nom Complet:
-                    <input type="text" id="nomComplet" required>
-                </label>
-                <label>User Name:
-                    <input type="text" id="userName" required>
-                </label>
-                <label>Compte:
-                    <input type="text" id="compte" required>
-                </label>
-                <label>Mot de Passe:
-                    <input type="password" id="motDePasse" required>
-                </label>
-                <label>Structure:
-                    <input type="text" id="structure" required>
-                </label>
+                <div class="form-group">
+                    <label for="nomComplet">Nom Complet:</label>
+                    <input type="text" id="nomComplet">
+                    <div class="validation-message" style="display: none; color: red;">Ce champ est requis</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="userName">User Name:</label>
+                    <input type="text" id="userName">
+                    <div class="validation-message" style="display: none; color: red;">Ce champ est requis</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="compte">Compte:</label>
+                    <input type="text" id="compte">
+                    <div class="validation-message" style="display: none; color: red;">Ce champ est requis</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="motDePasse">Mot de Passe:</label>
+                    <input type="password" id="motDePasse">
+                    <div class="validation-message" style="display: none; color: red;">Ce champ est requis</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="structure">Structure:</label>
+                    <input type="text" id="structure">
+                    <div class="validation-message" style="display: none; color: red;">Ce champ est requis</div>
+                </div>
+
                 <button type="submit">Ajouter</button>
             </form>
+
         </div>
     </div>
 
