@@ -23,7 +23,6 @@ require_once("../../db_connection/db_conn.php");
     <div>
         <div>
             <input type="text" id="searchInput" placeholder="Rechercher...">
-            <button type="button" id="clearSearch">Effacer</button>
         </div>
 
         <table id="garantiesTable">

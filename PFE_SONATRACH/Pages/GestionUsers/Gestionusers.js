@@ -50,8 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <td>••••••••</td>
             <td>${structure}</td>
             <td class="actions">
-                <button class="edit-btn">Modifier</button>
-                <button class="delete-btn">Supprimer</button>
+                <button class="edit-btn">Actions</button>
             </td>
         `;
 
