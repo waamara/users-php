@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!isValid) return;
 
         // Send data to server
-        fetch("../../Backend/GestionUsers/add_user.php", {
+        fetch('../../Backend/GestionUsers/requetes_ajax/add_user.php', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to load all users from the database
     function loadUsers() {
-        fetch("../../Backend/")
+        fetch("../../Backend/GestionUsers/requetes_ajax/get_users.php")
             .then(response => response.json())
             .then(users => {
                 const tbody = document.querySelector("#garantiesTable tbody");
