@@ -95,17 +95,41 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert(data.message); // optional success message
                 form.reset();
                 modal.style.display = "none";
-                loadUsers(); // refresh the user list (we’ll define this next)
+                loadUsers(); // refresh the user list
             })
             .catch((error) => {
                 console.error("Erreur:", error);
             });
     });
 
+    // Function to load all users from the database
+    function loadUsers() {
+        fetch("get_users.php")
+            .then(response => response.json())
+            .then(users => {
+                const tbody = document.querySelector("#garantiesTable tbody");
+                tbody.innerHTML = ""; // Clear the existing table rows
+
+                users.forEach(user => {
+                    const newRow = document.createElement("tr");
+                    newRow.innerHTML = `
+                        <td>${user.nom_user} ${user.prenom_user}</td>
+                        <td>${user.username}</td>
+                        <td>${user.status}</td>
+                        <td>••••••••</td>
+                        <td>${user.structure}</td>
+                        <td class="actions">
+                            <button class="edit-btn">Actions</button>
+                        </td>
+                    `;
+                    tbody.appendChild(newRow);
+                });
+            })
+            .catch(error => console.error("Erreur de chargement des utilisateurs:", error));
+    }
+
     function showValidationMessage(inputElement) {
-        const message = inputElement.parentElement.querySelector(
-            ".validation-message"
-        );
+        const message = inputElement.parentElement.querySelector(".validation-message");
         if (message) {
             message.style.display = "block";
         }
