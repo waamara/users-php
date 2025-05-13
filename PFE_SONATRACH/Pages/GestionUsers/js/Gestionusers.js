@@ -3,22 +3,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const modal = document.getElementById("userFormModal");
     const closeBtn = document.getElementById("closeFormBtn");
     const form = document.getElementById("userForm");
-    const tbody = document.querySelector("#garantiesTable tbody");
 
-    // Show modal when clicking "Ajouter un User"
     addUserLink.addEventListener("click", function (e) {
         e.preventDefault();
         modal.style.display = "block";
     });
 
-    // Hide modal when clicking close button
     closeBtn.addEventListener("click", () => {
         modal.style.display = "none";
         form.reset();
         hideValidationMessages();
     });
 
-    // Hide modal if clicked outside content box
     window.addEventListener("click", (e) => {
         if (e.target === modal) {
             modal.style.display = "none";
@@ -27,14 +23,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Handle form submission
     form.addEventListener("submit", function (e) {
         e.preventDefault();
-
-        // Hide all validation messages first
         hideValidationMessages();
 
-        // Get input values
         const nomCompletInput = document.getElementById("nomComplet");
         const userNameInput = document.getElementById("userName");
         const compteInput = document.getElementById("compte");
@@ -53,22 +45,18 @@ document.addEventListener("DOMContentLoaded", function () {
             showValidationMessage(nomCompletInput);
             isValid = false;
         }
-
         if (!userName) {
             showValidationMessage(userNameInput);
             isValid = false;
         }
-
         if (!compte) {
             showValidationMessage(compteInput);
             isValid = false;
         }
-
         if (!motDePasse) {
             showValidationMessage(motDePasseInput);
             isValid = false;
         }
-
         if (!structure) {
             showValidationMessage(structureInput);
             isValid = false;
@@ -76,46 +64,44 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!isValid) return;
 
-        // Send data to server
         fetch('../../Backend/GestionUsers/requetes_ajax/add_user.php', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                nomComplet: nomComplet,
-                userName: userName,
-                compte: compte,
-                motDePasse: motDePasse,
-                structure: structure,
+                nomComplet,
+                userName,
+                compte,
+                motDePasse,
+                structure,
             }),
         })
             .then((response) => response.json())
             .then((data) => {
-                alert(data.message); // optional success message
+                alert(data.message);
                 form.reset();
                 modal.style.display = "none";
-                loadUsers(); // refresh the user list
+                loadUsers();
             })
             .catch((error) => {
                 console.error("Erreur:", error);
             });
     });
 
-    // Function to load all users from the database
     function loadUsers() {
         fetch("../../Backend/GestionUsers/requetes_ajax/get_users.php")
             .then(response => response.json())
             .then(users => {
                 const tbody = document.querySelector("#garantiesTable tbody");
-                tbody.innerHTML = ""; // Clear the existing table rows
+                tbody.innerHTML = "";
 
                 users.forEach(user => {
                     const newRow = document.createElement("tr");
                     newRow.innerHTML = `
                         <td>${user.nom_user} ${user.prenom_user}</td>
                         <td>${user.username}</td>
-                        <td>${user.status}</td>
+                        <td>${user.status || 'Actif'}</td>
                         <td>••••••••</td>
                         <td>${user.structure}</td>
                         <td class="actions">
@@ -140,4 +126,7 @@ document.addEventListener("DOMContentLoaded", function () {
             message.style.display = "none";
         });
     }
+
+    // Initial load
+    loadUsers();
 });

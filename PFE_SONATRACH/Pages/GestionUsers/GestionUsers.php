@@ -29,14 +29,30 @@ require_once("../../db_connection/db_conn.php");
             <thead>
                 <tr>
                     <th>Nom Complet</th>
-                    <th>User Name</th>
-                    <th>Compte</th>
+                    <th>Username</th>
+                    <th>Status</th>
                     <th>Mot de passe</th>
                     <th>Structure</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
+                <?php
+                $stmt = $pdo->query("SELECT * FROM users");
+                $users = $stmt->fetchAll();
+                foreach ($users as $user) {
+                    echo "<tr>
+                            <td>{$user['nom_user']} {$user['prenom_user']}</td>
+                            <td>{$user['username']}</td>
+                            <td>none</td>
+                            <td>••••••••</td>
+                            <td>{$user['structure']}</td>
+                            <td class='actions'>
+                                <button class='edit-btn'>Actions</button>
+                            </td>
+                        </tr>";
+                }
+                ?>
             </tbody>
         </table>
     </div>
@@ -79,7 +95,6 @@ require_once("../../db_connection/db_conn.php");
 
                 <button type="submit">Ajouter</button>
             </form>
-
         </div>
     </div>
 

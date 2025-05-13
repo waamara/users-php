@@ -1,21 +1,18 @@
 <?php
 require_once("../../../db_connection/db_conn.php");
-
 header("Content-Type: application/json");
 
-$sql = "SELECT * FROM users";
-$result = $conn->query($sql);
+try {
+    $sql = "SELECT * FROM users";
+    $stmt = $pdo->query($sql);
 
-$users = [];
-
-if ($result) {
-    while ($row = $result->fetch_assoc()) {
+    $users = [];
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $users[] = $row;
     }
 
     echo json_encode($users);
-} else {
-    echo json_encode(["error" => "Erreur lors de la récupération des utilisateurs"]);
+} catch (PDOException $e) {
+    echo json_encode(["message" => "Database query failed: " . $e->getMessage()]);
 }
-
-$conn->close();
+?>
