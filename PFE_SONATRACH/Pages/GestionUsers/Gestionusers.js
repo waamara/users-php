@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to load all users from the database
     function loadUsers() {
-        fetch("get_users.php")
+        fetch("../../Backend/")
             .then(response => response.json())
             .then(users => {
                 const tbody = document.querySelector("#garantiesTable tbody");
