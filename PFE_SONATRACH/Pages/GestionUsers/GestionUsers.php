@@ -11,7 +11,7 @@ require_once("../../db_connection/db_conn.php");
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liste des Users</title>
-    <link rel="stylesheet" href="GestionUsers.css">
+    <link rel="stylesheet" href="../GestionUsers/css/GestionUsers.css">
 </head>
 
 <body>
@@ -83,7 +83,7 @@ require_once("../../db_connection/db_conn.php");
         </div>
     </div>
 
-    <script src="Gestionusers.js"></script>
+    <script src="../GestionUsers/js/Gestionusers.js"></script>
 </body>
 
 </html>
