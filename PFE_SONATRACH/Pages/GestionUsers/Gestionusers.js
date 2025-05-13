@@ -76,36 +76,44 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!isValid) return;
 
-        // Add user to table
-        const newRow = document.createElement("tr");
-        newRow.innerHTML = `
-            <td>${nomComplet}</td>
-            <td>${userName}</td>
-            <td>${compte}</td>
-            <td>••••••••</td>
-            <td>${structure}</td>
-            <td class="actions">
-                <button class="edit-btn">Actions</button>
-            </td>
-        `;
-
-        tbody.appendChild(newRow);
-
-        // Reset and hide form
-        form.reset();
-        modal.style.display = "none";
+        // Send data to server
+        fetch("../../Backend/GestionUsers/add_user.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                nomComplet: nomComplet,
+                userName: userName,
+                compte: compte,
+                motDePasse: motDePasse,
+                structure: structure,
+            }),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                alert(data.message); // optional success message
+                form.reset();
+                modal.style.display = "none";
+                loadUsers(); // refresh the user list (we’ll define this next)
+            })
+            .catch((error) => {
+                console.error("Erreur:", error);
+            });
     });
 
     function showValidationMessage(inputElement) {
-        const message = inputElement.parentElement.querySelector(".validation-message");
+        const message = inputElement.parentElement.querySelector(
+            ".validation-message"
+        );
         if (message) {
             message.style.display = "block";
         }
     }
 
     function hideValidationMessages() {
-        document.querySelectorAll('.validation-message').forEach(message => {
-            message.style.display = 'none';
+        document.querySelectorAll(".validation-message").forEach((message) => {
+            message.style.display = "none";
         });
     }
 });
