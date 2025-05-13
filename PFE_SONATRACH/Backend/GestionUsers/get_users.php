@@ -8,8 +8,14 @@ $result = $conn->query($sql);
 
 $users = [];
 
-while ($row = $result->fetch_assoc()) {
-    $users[] = $row;
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $users[] = $row;
+    }
+
+    echo json_encode($users);
+} else {
+    echo json_encode(["error" => "Erreur lors de la récupération des utilisateurs"]);
 }
 
-echo json_encode($users);
+$conn->close();
