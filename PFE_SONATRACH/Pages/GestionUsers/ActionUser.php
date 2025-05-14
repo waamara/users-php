@@ -33,8 +33,8 @@ require_once("../../db_connection/db_conn.php");
                     </h2>
                 </div>
                 <div class="action-buttons">
-                    <a href="#" class="btn btn-secondary" id="ret" onclick="history.back(); return false;">
-                        <i class='bx bx-arrow-back'></i> Retour
+                    <a href="../GestionUsers/GestionUsers.php" class="btn btn-secondary" id="ret" >
+                        <i class='bx bx-arrow-back'>Retour</i> 
                     </a>
                 </div>
             </div>
