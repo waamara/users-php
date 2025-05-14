@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Détails de l'Utilisateur</title>
     <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
-    
+    <link rel="stylesheet" href="../GestionUsers/css/ActionUsers.css"> 
 </head>
 <body>
     <div class="container fade-in">
