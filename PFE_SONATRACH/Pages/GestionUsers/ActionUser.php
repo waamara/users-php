@@ -1,3 +1,10 @@
+<?php
+session_start();
+require_once("../Template/header.php");
+require_once("../../db_connection/db_conn.php");
+?>
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -158,3 +165,8 @@
     <script src="../GestionUsers/js/ActionUsers.js"></script>
 </body>
 </html>
+
+
+<?php
+require_once('../Template/footer.php');
+?>
