@@ -153,9 +153,8 @@
             </div>
         </div>
     </div>
+    <div class="toast-container" id="toastContainer"></div> 
 
-    <!-- Toast container -->
-    <div class="toast-container" id="toastContainer"></div>
-
+    <script src="../GestionUsers/js/ActionUsers.js"></script>
 </body>
 </html>
