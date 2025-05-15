@@ -7,29 +7,28 @@ require_once("../../db_connection/db_conn.php");
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $userId = intval($_GET['id']);
 } else {
-    // Si pas d'ID valide, rediriger ou afficher un message d'erreur
     header("Location: ../GestionUsers/GestionUsers.php");
     exit();
 }
 
-
+// Récupérer l'utilisateur
 $stmt = $pdo->prepare("SELECT * FROM users WHERE id_user = ?");
 $stmt->execute([$userId]);
 $user = $stmt->fetch();
 
 if (!$user) {
-    // Si utilisateur non trouvé, rediriger ou afficher une erreur
     header("Location: ../GestionUsers/GestionUsers.php");
     exit();
 }
 
-
+// Récupérer l'historique s’il existe une table `historique`
+$stmtLogs = $pdo->prepare("SELECT * FROM historique WHERE id_user = ? ORDER BY date_action DESC");
+$stmtLogs->execute([$userId]);
+$logs = $stmtLogs->fetchAll();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -50,9 +49,9 @@ if (!$user) {
                     <h2>
                         <i class='bx bx-detail'></i>
                         Utilisateur
-                        <span class="status-badge active" id="accountStatusBadge">
-                            <i class='bx bx-check-circle'></i>
-                            Actif
+                        <span class="status-badge <?= $user['etat_user'] === 'actif' ? 'active' : 'inactive' ?>" id="accountStatusBadge">
+                            <i class='bx <?= $user['etat_user'] === 'actif' ? 'bx-check-circle' : 'bx-block' ?>'></i>
+                            <?= ucfirst($user['etat_user']) ?>
                         </span>
                     </h2>
                 </div>
@@ -62,42 +61,46 @@ if (!$user) {
                     </a>
                 </div>
             </div>
+
             <div class="card-body">
                 <div class="info-grid">
                     <div>
                         <div class="info-group">
                             <span class="info-label">Nom complet</span>
-                            <span class="info-value highlight" id="fullName">Jean Dupont</span>
+                            <span class="info-value highlight" id="fullName"><?= htmlspecialchars($user['nom_user'] . ' ' . $user['prenom_user']) ?></span>
                         </div>
                         <div class="info-group">
                             <span class="info-label">Nom d'utilisateur</span>
-                            <span class="info-value" id="username">jdupont</span>
+                            <span class="info-value" id="username"><?= htmlspecialchars($user['username']) ?></span>
                         </div>
                         <div class="info-group">
                             <span class="info-label">Structure</span>
-                            <span class="info-value" id="structure">Département Informatique</span>
+                            <span class="info-value" id="structure"><?= htmlspecialchars($user['structure']) ?></span>
                         </div>
                     </div>
                     <div>
                         <div class="info-group">
                             <span class="info-label">État du compte</span>
                             <span class="info-value">
-                                <span class="status-badge active" id="accountStatus">
-                                    <i class='bx bx-check-circle'></i> Actif
+                                <span class="status-badge <?= $user['etat_user'] === 'actif' ? 'active' : 'inactive' ?>" id="accountStatus">
+                                    <i class='bx <?= $user['etat_user'] === 'actif' ? 'bx-check-circle' : 'bx-block' ?>'></i> 
+                                    <?= ucfirst($user['etat_user']) ?>
                                 </span>
                             </span>
                         </div>
                         <div class="info-group">
                             <span class="info-label">État du mot de passe</span>
                             <span class="info-value">
-                                <span class="status-badge initialized" id="passwordStatus">
-                                    <i class='bx bx-check-circle'></i> Initialisé
+                                <span class="status-badge <?= $user['etat_mdp'] === 'initialisé' ? 'initialized' : 'updated' ?>" id="passwordStatus">
+                                    <i class='bx bx-check-circle'></i> <?= ucfirst($user['etat_mdp']) ?>
                                 </span>
                             </span>
                         </div>
                         <div class="info-group">
                             <span class="info-label">Dernière connexion</span>
-                            <span class="info-value" id="lastLogin">15/05/2023 14:30</span>
+                            <span class="info-value" id="lastLogin">
+                                <?= !empty($user['last_login']) ? htmlspecialchars(date('d/m/Y H:i', strtotime($user['last_login']))) : '-' ?>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -107,8 +110,9 @@ if (!$user) {
                 </div>
 
                 <div class="action-buttons" style="justify-content: center; margin-top: 1.5rem;">
-                    <button class="btn btn-danger" id="toggleStatusBtn">
-                        <i class='bx bx-power-off'></i> Désactiver le compte
+                    <?php $isActive = ($user['etat_user'] === 'actif'); ?>
+                    <button class="btn <?= $isActive ? 'btn-danger' : 'btn-success' ?>" id="toggleStatusBtn">
+                        <i class='bx bx-power-off'></i> <?= $isActive ? 'Désactiver le compte' : 'Activer le compte' ?>
                     </button>
                     <button class="btn btn-warning" id="resetPasswordBtn">
                         <i class='bx bx-reset'></i> Réinitialiser le mot de passe
@@ -119,56 +123,47 @@ if (!$user) {
                     <i class='bx bx-history'></i> Historique des activités
                 </div>
                 <div class="timeline">
-                    <div class="timeline-item">
-                        <div class="timeline-date">15/05/2023 14:30</div>
-                        <div class="timeline-content">
-                            <div class="timeline-title">Connexion réussie</div>
-                            <div class="timeline-description">
-                                <p>Adresse IP: 192.168.1.45</p>
+                    <?php if (!empty($logs)): ?>
+                        <?php foreach ($logs as $log): ?>
+                            <div class="timeline-item">
+                                <div class="timeline-date"><?= htmlspecialchars(date('d/m/Y H:i', strtotime($log['date_action']))) ?></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title"><?= htmlspecialchars($log['titre_action']) ?></div>
+                                    <div class="timeline-description">
+                                        <p><?= htmlspecialchars($log['description']) ?></p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-date">10/05/2023 09:15</div>
-                        <div class="timeline-content">
-                            <div class="timeline-title">Mot de passe modifié</div>
-                            <div class="timeline-description">
-                                <p>L'utilisateur a changé son mot de passe</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-date">01/05/2023 11:20</div>
-                        <div class="timeline-content">
-                            <div class="timeline-title">Compte créé</div>
-                            <div class="timeline-description">
-                                <p>Création du compte utilisateur</p>
-                            </div>
-                        </div>
-                    </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p style="text-align: center; color: gray;">Aucune activité enregistrée.</p>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal de confirmation pour désactiver/activer le compte -->
+    <!-- Modales -->
     <div class="modal-backdrop" id="toggleStatusModal">
         <div class="modal">
             <div class="modal-header">
-                <h3 class="modal-title" id="toggleStatusTitle">Désactiver le compte</h3>
+                <h3 class="modal-title" id="toggleStatusTitle"><?= $isActive ? 'Désactiver le compte' : 'Activer le compte' ?></h3>
                 <button class="modal-close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
-                <p id="toggleStatusMessage">Êtes-vous sûr de vouloir désactiver ce compte utilisateur ? L'utilisateur ne pourra plus se connecter au système.</p>
+                <p id="toggleStatusMessage">
+                    <?= $isActive 
+                        ? "Êtes-vous sûr de vouloir désactiver ce compte utilisateur ? L'utilisateur ne pourra plus se connecter." 
+                        : "Êtes-vous sûr de vouloir activer ce compte utilisateur ?" ?>
+                </p>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                <button class="btn btn-danger" id="confirmToggleStatus">Confirmer</button>
+                <button class="btn <?= $isActive ? 'btn-danger' : 'btn-success' ?>" id="confirmToggleStatus">Confirmer</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal de confirmation pour réinitialiser le mot de passe -->
     <div class="modal-backdrop" id="resetPasswordModal">
         <div class="modal">
             <div class="modal-header">
@@ -176,7 +171,7 @@ if (!$user) {
                 <button class="modal-close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
-                <p>Êtes-vous sûr de vouloir réinitialiser le mot de passe de cet utilisateur ? Un email sera envoyé à l'utilisateur avec les instructions pour définir un nouveau mot de passe.</p>
+                <p>Êtes-vous sûr de vouloir réinitialiser le mot de passe de cet utilisateur ? Un email sera envoyé à l'utilisateur avec les instructions.</p>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-dismiss="modal">Annuler</button>
@@ -184,13 +179,11 @@ if (!$user) {
             </div>
         </div>
     </div>
-    <div class="toast-container" id="toastContainer"></div>
 
+    <div class="toast-container" id="toastContainer"></div>
     <script src="../GestionUsers/js/ActionUsers.js"></script>
 </body>
-
 </html>
-
 
 <?php
 require_once('../Template/footer.php');

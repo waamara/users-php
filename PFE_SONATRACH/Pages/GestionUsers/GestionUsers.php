@@ -48,7 +48,7 @@ require_once("../../db_connection/db_conn.php");
                             <td>••••••••</td>
                             <td>{$user['structure']}</td>
                             <td class='actions'>
-                            <a href='ActionUsers.php?id=" . $user['id_user'] . "' class='edit-btn'>Actions</a>
+                            <a href='ActionUsers.php?id=" . $user['id'] . "' class='edit-btn'>Actions</a>
                         </tr>";
                 }
                 ?>
