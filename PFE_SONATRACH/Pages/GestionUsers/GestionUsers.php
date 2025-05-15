@@ -77,9 +77,14 @@ require_once("../../db_connection/db_conn.php");
 
                 <div class="form-group">
                     <label for="compte">Compte:</label>
-                    <input type="text" id="compte">
+                    <select id="compte">
+                        <option value="">-- Sélectionnez un état --</option>
+                        <option value="actif">Actif</option>
+                        <option value="desactive">Désactivé</option>
+                    </select>
                     <div class="validation-message" style="display: none; color: red;">Ce champ est requis</div>
                 </div>
+
 
                 <div class="form-group">
                     <label for="motDePasse">Mot de Passe:</label>
