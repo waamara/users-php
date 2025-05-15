@@ -1,7 +1,17 @@
 <?php
 session_start();
 require_once("../Template/header.php");
-require_once("../../db_connection/db_conn.php");
+require_once("../../db_connection/db_conn.php"); 
+
+// Vérifier si un ID est passé en GET
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $userId = intval($_GET['id']);
+} else {
+    // Si pas d'ID valide, rediriger ou afficher un message d'erreur
+    header("Location: ../GestionUsers/GestionUsers.php");
+    exit();
+}
+
 ?>
 
 
