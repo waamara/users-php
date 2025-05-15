@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once("../Template/header.php");
-require_once("../../db_connection/db_conn.php"); 
+require_once("../../db_connection/db_conn.php");
 
 // Vérifier si un ID est passé en GET
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
@@ -29,17 +29,19 @@ if (!$user) {
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Détails de l'Utilisateur</title>
     <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="../GestionUsers/css/ActionUsers.css"> 
+    <link rel="stylesheet" href="../GestionUsers/css/ActionUsers.css">
 </head>
+
 <body>
     <div class="container fade-in">
         <div class="page-header">
-            <h1><i class='bx bx-user-circle'></i> Détails de l'Utilisateur</h1>
+            <h1><i class='bx bx-user-circle'></i> Détails de l'Utilisateur : <?= htmlspecialchars($user['nom_user'] . ' ' . $user['prenom_user']) ?></h1>
         </div>
 
         <div class="card">
@@ -55,8 +57,8 @@ if (!$user) {
                     </h2>
                 </div>
                 <div class="action-buttons">
-                    <a href="../GestionUsers/GestionUsers.php" class="btn btn-secondary" id="ret" >
-                        <i class='bx bx-arrow-back'>Retour</i> 
+                    <a href="../GestionUsers/GestionUsers.php" class="btn btn-secondary" id="ret">
+                        <i class='bx bx-arrow-back'>Retour</i>
                     </a>
                 </div>
             </div>
@@ -103,7 +105,7 @@ if (!$user) {
                 <div class="section-title" style="margin-top: 2rem;">
                     <i class='bx bx-shield'></i> Actions disponibles
                 </div>
-                
+
                 <div class="action-buttons" style="justify-content: center; margin-top: 1.5rem;">
                     <button class="btn btn-danger" id="toggleStatusBtn">
                         <i class='bx bx-power-off'></i> Désactiver le compte
@@ -182,10 +184,11 @@ if (!$user) {
             </div>
         </div>
     </div>
-    <div class="toast-container" id="toastContainer"></div> 
+    <div class="toast-container" id="toastContainer"></div>
 
     <script src="../GestionUsers/js/ActionUsers.js"></script>
 </body>
+
 </html>
 
 
