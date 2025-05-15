@@ -12,6 +12,18 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     exit();
 }
 
+
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id_user = ?");
+$stmt->execute([$userId]);
+$user = $stmt->fetch();
+
+if (!$user) {
+    // Si utilisateur non trouvé, rediriger ou afficher une erreur
+    header("Location: ../GestionUsers/GestionUsers.php");
+    exit();
+}
+
+
 ?>
 
 
