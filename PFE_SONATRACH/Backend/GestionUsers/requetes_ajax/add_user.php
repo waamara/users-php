@@ -16,9 +16,13 @@ if ($nomComplet && $userName && $compte && $motDePasse && $structure) {
         $nom_user = $nameParts[0];
         $prenom_user = isset($nameParts[1]) ? $nameParts[1] : "";
 
-        $sql = "INSERT INTO users (nom_user, prenom_user, username, password, structure) VALUES (?, ?, ?, ?, ?)";
+        // Convertir "actif" ou "desactive" en 1 ou 0
+        $status = strtolower($compte) === 'actif' ? 1 : 0;
+
+        $sql = "INSERT INTO users (nom_user, prenom_user, username, password, structure, status) 
+                VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([$nom_user, $prenom_user, $userName, $motDePasse, $structure]);
+        $stmt->execute([$nom_user, $prenom_user, $userName, $motDePasse, $structure, $status]);
 
         echo json_encode(["message" => "User successfully added."]);
     } catch (PDOException $e) {
