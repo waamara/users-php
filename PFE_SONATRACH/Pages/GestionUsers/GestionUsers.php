@@ -29,7 +29,6 @@ require_once("../../db_connection/db_conn.php");
                     <th>Nom Complet</th>
                     <th>Username</th>
                     <th>Status</th>
-                    <th>Mot de passe</th>
                     <th>Structure</th>
                     <th>Actions</th>
                 </tr>
@@ -100,35 +99,7 @@ require_once("../../db_connection/db_conn.php");
         </div>
     </div>
 
-    <script>
-        // Exemple JS simple pour ouvrir la modale "Ajouter un User"
-        const addUserLink = document.getElementById('addUserLink');
-        const modal = document.getElementById('userFormModal');
-        const closeBtn = document.getElementById('closeFormBtn');
-
-        addUserLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            modal.style.display = 'block';
-        });
-
-        closeBtn.addEventListener('click', function() {
-            modal.style.display = 'none';
-        });
-
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = 'none';
-            }
-        };
-
-        // Validation simple formulaire (tu peux améliorer)
-        document.getElementById('userForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Ajoute ici la validation et l'envoi ajax si tu veux
-            alert('Fonction d\'ajout utilisateur à implémenter');
-            modal.style.display = 'none';
-        });
-    </script>
+    <script src="../GestionUsers/js/Gestionusers.js"> </script>
 
 </body>
 
