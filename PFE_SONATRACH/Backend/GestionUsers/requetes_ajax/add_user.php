@@ -27,4 +27,3 @@ if ($nomComplet && $userName && $compte && $motDePasse && $structure) {
 } else {
     echo json_encode(["message" => "All fields are required."]);
 }
-?>

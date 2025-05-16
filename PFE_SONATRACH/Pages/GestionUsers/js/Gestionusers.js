@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         <td>${user.nom_user} ${user.prenom_user}</td>
                         <td>${user.username}</td>
                         <td>${user.status || 'Actif'}</td>
-                        
+                        <td>••••••••</td>
                         <td>${user.structure}</td>
                         <td class="actions">
                             <button class="edit-btn">Actions</button>
