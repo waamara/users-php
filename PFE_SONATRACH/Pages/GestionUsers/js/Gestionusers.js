@@ -90,29 +90,29 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     function loadUsers() {
-        fetch("../../Backend/GestionUsers/requetes_ajax/get_users.php")
-            .then(response => response.json())
-            .then(users => {
-                const tbody = document.querySelector("#garantiesTable tbody");
-                tbody.innerHTML = "";
+    fetch("../../Backend/GestionUsers/requetes_ajax/get_users.php")
+        .then(response => response.json())
+        .then(users => {
+            const tbody = document.querySelector("#garantiesTable tbody");
+            tbody.innerHTML = "";
 
-                users.forEach(user => {
-                    const newRow = document.createElement("tr");
-                    newRow.innerHTML = `
-                        <td>${user.nom_user} ${user.prenom_user}</td>
-                        <td>${user.username}</td>
-                        <td>${user.status || 'Actif'}</td>
-                        <td>••••••••</td>
-                        <td>${user.structure}</td>
-                        <td class="actions">
-                            <button class="edit-btn">Actions</button>
-                        </td>
-                    `;
-                    tbody.appendChild(newRow);
-                });
-            })
-            .catch(error => console.error("Erreur de chargement des utilisateurs:", error));
-    }
+            users.forEach(user => {
+                const newRow = document.createElement("tr");
+                newRow.innerHTML = `
+                    <td>${user.nom_user} ${user.prenom_user}</td>
+                    <td>${user.username}</td>
+                    <td>${user.status == 1 ? 'Actif' : 'Désactivé'}</td>
+                    <td>${user.direction || 'Non défini'}</td>
+                    <td class="actions">
+                        <a href="ActionUser.php?id=${user.id}" title="Modifier l'utilisateur">Actions</a>
+                    </td>
+                `;
+                tbody.appendChild(newRow);
+            });
+        })
+        .catch(error => console.error("Erreur de chargement des utilisateurs:", error));
+}
+
 
     function showValidationMessage(inputElement) {
         const message = inputElement.parentElement.querySelector(".validation-message");

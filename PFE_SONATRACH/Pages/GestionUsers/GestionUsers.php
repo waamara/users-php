@@ -35,21 +35,7 @@ $directions = $stmt->fetchAll();
                 </tr>
             </thead>
             <tbody>
-                <?php
-                $stmt = $pdo->query("SELECT * FROM users");
-                $users = $stmt->fetchAll();
-                foreach ($users as $user) {
-                    echo "<tr>
-                        <td>{$user['nom_user']} {$user['prenom_user']}</td>
-                        <td>{$user['username']}</td>
-                        <td>none</td>
-                        <td>{$user['structure']}</td>
-                        <td class='actions'>
-                            <a href='ActionUser.php?id=" . $user['id'] . "' title='Modifier l\\'utilisateur'>Actions</a>
-                        </td>
-                    </tr>";
-                }
-                ?>
+                <!-- Le contenu est chargé dynamiquement par JavaScript -->
             </tbody>
         </table>
     </div>
@@ -93,7 +79,7 @@ $directions = $stmt->fetchAll();
                     <select id="structure" name="structure">
                         <option value="">-- Sélectionnez une direction --</option>
                         <?php foreach ($directions as $direction): ?>
-                            <option value="<?= htmlspecialchars($direction['libelle']) ?>">
+                            <option value="<?= htmlspecialchars($direction['id']) ?>">
                                 <?= htmlspecialchars($direction['libelle']) ?>
                             </option>
                         <?php endforeach; ?>
@@ -106,54 +92,7 @@ $directions = $stmt->fetchAll();
         </div>
     </div>
 
-    <script>
-        const addUserLink = document.getElementById('addUserLink');
-        const modal = document.getElementById('userFormModal');
-        const closeBtn = document.getElementById('closeFormBtn');
-
-        addUserLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            modal.style.display = 'block';
-        });
-
-        closeBtn.addEventListener('click', function() {
-            modal.style.display = 'none';
-        });
-
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = 'none';
-            }
-        };
-
-        // Envoi AJAX du formulaire
-        document.getElementById('userForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = {
-                nomComplet: document.getElementById('nomComplet').value,
-                userName: document.getElementById('userName').value,
-                compte: document.getElementById('compte').value,
-                motDePasse: document.getElementById('motDePasse').value,
-                structure: document.getElementById('structure').value
-            };
-
-            fetch('ajout_user_api.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message);
-                if (data.message.includes('successfully')) {
-                    location.reload();
-                }
-            })
-            .catch(error => {
-                alert('Erreur : ' + error.message);
-            });
-        });
-    </script>
+    <script src="../GestionUsers/js/Gestionusers.js"></script>
 </body>
 </html>
 
