@@ -30,7 +30,6 @@ $directions = $stmt->fetchAll();
                     <th>Nom Complet</th>
                     <th>Username</th>
                     <th>Status</th>
-                    <th>Mot de passe</th>
                     <th>Structure</th>
                     <th>Actions</th>
                 </tr>
@@ -44,7 +43,6 @@ $directions = $stmt->fetchAll();
                         <td>{$user['nom_user']} {$user['prenom_user']}</td>
                         <td>{$user['username']}</td>
                         <td>none</td>
-                        <td>••••••••</td>
                         <td>{$user['structure']}</td>
                         <td class='actions'>
                             <a href='ActionUser.php?id=" . $user['id'] . "' title='Modifier l\\'utilisateur'>Actions</a>
