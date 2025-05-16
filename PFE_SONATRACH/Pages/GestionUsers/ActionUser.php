@@ -10,8 +10,13 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     exit();
 }
 
-// Récupérer l'utilisateur (ajusté avec le bon nom de colonne 'id')
-$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+// Requête avec jointure pour récupérer le libellé de la structure
+$stmt = $pdo->prepare("
+    SELECT users.*, direction.libelle AS structure_libelle
+    FROM users
+    LEFT JOIN direction ON users.structure = direction.id
+    WHERE users.id = ?
+");
 $stmt->execute([$userId]);
 $user = $stmt->fetch();
 
@@ -20,7 +25,7 @@ if (!$user) {
     exit();
 }
 
-// L'utilisateur est valide, on peut inclure le header HTML
+// Inclure le header HTML
 require_once("../Template/header.php");
 ?>
 
@@ -71,7 +76,7 @@ require_once("../Template/header.php");
                     </div>
                     <div class="info-group">
                         <span class="info-label">Structure</span>
-                        <span class="info-value" id="structure"><?= htmlspecialchars($user['structure']) ?></span>
+                        <span class="info-value" id="structure"><?= htmlspecialchars($user['structure_libelle'] ?? 'N/A') ?></span>
                     </div>
                 </div>
                 <div>
