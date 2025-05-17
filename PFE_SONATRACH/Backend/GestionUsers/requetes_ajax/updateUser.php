@@ -12,10 +12,12 @@ $structure = isset($data['structure']) ? trim($data['structure']) : null;
 
 if ($id && $nomComplet && $userName && $compte && $structure) {
     try {
+        // Séparer nom complet en nom + prénom
         $nameParts = explode(" ", $nomComplet, 2);
         $nom_user = $nameParts[0];
         $prenom_user = isset($nameParts[1]) ? $nameParts[1] : "";
 
+        // Statut en booléen 1 = actif, 0 = inactif
         $status = strtolower($compte) === 'actif' ? 1 : 0;
 
         $sql = "UPDATE users 

@@ -112,10 +112,18 @@ require_once("../Template/header.php");
                 <button class="btn btn-warning" id="resetPasswordBtn">
                     <i class='bx bx-reset'></i> Réinitialiser le mot de passe
                 </button>
+                <a href="ModifierUser.php?id=<?= $userId ?>" class="btn btn-primary" id="editUserBtn">
+                    <i class='bx bx-edit'></i> Modifier
+                </a>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Injection de la variable PHP userId en JS -->
+<script>
+    window.userId = <?= json_encode($userId) ?>;
+</script>
 
 <script src="../GestionUsers/js/ActionUsers.js"></script>
 </body>
