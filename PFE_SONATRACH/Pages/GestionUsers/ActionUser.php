@@ -1,8 +1,7 @@
 <?php
 session_start();
-require_once("../../db_connection/db_conn.php"); // NE PAS inclure header.php tout de suite
+require_once("../../db_connection/db_conn.php");
 
-// Vérifier si un ID est passé en GET
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $userId = intval($_GET['id']);
 } else {
@@ -10,7 +9,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     exit();
 }
 
-// Requête avec jointure pour récupérer le libellé de la structure
 $stmt = $pdo->prepare("
     SELECT users.*, direction.libelle AS structure_libelle
     FROM users
@@ -25,8 +23,10 @@ if (!$user) {
     exit();
 }
 
-// Inclure le header HTML
 require_once("../Template/header.php");
+
+// Charger les structures pour le formulaire
+$structures = $pdo->query("SELECT id, libelle FROM direction ORDER BY libelle")->fetchAll();
 ?>
 
 <!DOCTYPE html>
@@ -60,6 +60,9 @@ require_once("../Template/header.php");
                 <a href="../GestionUsers/GestionUsers.php" class="btn btn-secondary" id="ret">
                     <i class='bx bx-arrow-back'></i> Retour
                 </a>
+                <button class="btn btn-primary" id="editUserBtn">
+                    <i class='bx bx-edit'></i> Modifier
+                </button>
             </div>
         </div>
 
@@ -76,7 +79,7 @@ require_once("../Template/header.php");
                     </div>
                     <div class="info-group">
                         <span class="info-label">Structure</span>
-                        <span class="info-value" id="structure"><?= htmlspecialchars($user['structure_libelle'] ?? 'N/A') ?></span>
+                        <span class="info-value" id="structureDisplay"><?= htmlspecialchars($user['structure_libelle'] ?? 'N/A') ?></span>
                     </div>
                 </div>
                 <div>
@@ -112,20 +115,69 @@ require_once("../Template/header.php");
                 <button class="btn btn-warning" id="resetPasswordBtn">
                     <i class='bx bx-reset'></i> Réinitialiser le mot de passe
                 </button>
-                <a href="ModifierUser.php?id=<?= $userId ?>" class="btn btn-primary" id="editUserBtn">
-                    <i class='bx bx-edit'></i> Modifier
-                </a>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Injection de la variable PHP userId en JS -->
+<!-- Modal Formulaire de modification -->
+<div id="userFormModal" class="modal-backdrop">
+    <div class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Modifier l'Utilisateur</h3>
+                <button id="closeFormBtn" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <div class="form-group">
+                        <label for="nomComplet">Nom Complet:</label>
+                        <input type="text" id="nomComplet" name="nomComplet" class="form-control" />
+                        <div class="validation-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="userName">Nom d'utilisateur:</label>
+                        <input type="text" id="userName" name="userName" class="form-control" />
+                        <div class="validation-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="compte">Compte:</label>
+                        <select id="compte" name="compte" class="form-control">
+                            <option value="actif">Actif</option>
+                            <option value="desactive">Désactivé</option>
+                        </select>
+                        <div class="validation-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="structure">Structure:</label>
+                        <select id="structure" name="structure" class="form-control">
+                            <option value="">-- Sélectionnez une direction --</option>
+                            <?php foreach ($structures as $s): ?>
+                                <option value="<?= $s['id'] ?>"><?= htmlspecialchars($s['libelle']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <div class="validation-message"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="cancelBtn">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toastContainer" class="toast-container"></div>
+
 <script>
-    window.userId = <?= json_encode($userId) ?>;
+    window.userId = <?= json_encode($user['id']) ?>;
+    window.userData = <?= json_encode($user) ?>;
 </script>
 
 <script src="../GestionUsers/js/ActionUsers.js"></script>
+
 </body>
 </html>
 
