@@ -1,0 +1,338 @@
+/* Banque.css */
+:root {
+  --primary: #1775f1;
+  --success: #81d43a;
+  --danger: #fc3b56;
+  --warning: #ffa726;
+  --light: #ffffff;
+  --grey: #f1f0f6;
+  --dark-grey: #333333;
+  --border-radius: 8px;
+  --transition-speed: 0.3s;
+}
+
+.page {
+  padding-top: 1%;
+  padding-bottom: 1%;
+  border-radius: 1%;
+  width: 95%;
+  margin-left: 1.8%;
+  background: rgb(255, 255, 255);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.title {
+  margin-left: 2.5%;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+  line-height: 1.6;
+  background-color: var(--grey);
+}
+
+/* --- Action Bar --- */
+.action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  margin-left: 2.3%;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-primary:hover {
+  background-color: #0c5fcd;
+}
+
+.search-container {
+  flex: 1;
+  max-width: 400px;
+}
+
+.search-form {
+  position: relative;
+}
+
+.search-form input {
+  width: 80%; /* Adjust the percentage as needed */
+  max-width: 300px; /* Optional: Limit the max width */
+  padding: 0.8rem 1.5rem;
+  border-radius: var(--border-radius);
+  border: 2px solid transparent;
+  background: white;
+  transition: all var(--transition-speed);
+}
+
+.search-form input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(23, 117, 241, 0.2);
+}
+
+.search-form .icon {
+  position: absolute;
+  right: 5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--dark-grey);
+}
+
+/* --- Table --- */
+.table-container {
+  width: 95%;
+  margin-left: 1.8%;
+  background: rgb(255, 255, 255);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background: var(--primary);
+  color: white;
+  padding: 1.2rem;
+  text-align: left;
+}
+
+td {
+  padding: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+tr:hover {
+  background-color: var(--light-blue);
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-edit {
+  background: #0c5fcd;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all var(--transition-speed);
+}
+
+.btn-delete {
+  background: #0c5fcd;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all var(--transition-speed);
+}
+
+.btn-agence {
+  background: #0c5fcd;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all var(--transition-speed);
+}
+
+/* Style du bouton Retour */
+.btn-back {
+  background-color: #0c5fcd;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+}
+
+/* --- Modal --- */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-content {
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+  animation: scaleIn 0.3s ease-in-out;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.close-btn,
+.addClose-btn {
+  font-size: 1.5rem;
+  color: var(--dark-grey);
+  cursor: pointer;
+  transition: color var(--transition-speed);
+}
+
+.close-btn:hover,
+.addClose-btn:hover {
+  color: var(--danger);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--dark-grey);
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 2px solid var(--grey);
+  border-radius: var(--border-radius);
+  transition: all var(--transition-speed);
+}
+
+.form-group input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(23, 117, 241, 0.2);
+}
+
+.btn-submit {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.btn-submit:hover {
+  background: #0c5fcd;
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 768px) {
+  .action-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search-container {
+    width: 100%;
+  }
+
+  table {
+    font-size: 0.9rem;
+  }
+
+  th,
+  td {
+    padding: 0.8rem;
+  }
+}
+
+/* --- Animations --- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* --- Error Handling --- */
+.error-message {
+  color: var(--danger);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  display: none;
+}
+
+.is-invalid {
+  border-color: var(--danger) !important;
+}
+
+/* Additional Styles for Banque */
+#code, 
+#designation,
+#editCode,
+#editDesignation {
+  width: 100%;
+}
+
+/* Additional Styles for Agence */
+#code, #label, #adresse {
+  width: 100%;
+  padding: 0.9rem;
+  border: 2px solid var(--grey);
+  border-radius: var(--border-radius);
+  transition: all var(--transition-speed);
+}
+
+#code:focus, #label:focus, #adresse:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(23, 117, 241, 0.2);
+}
