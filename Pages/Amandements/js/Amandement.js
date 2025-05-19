@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${amendment.type_label || 'Inconnu'}</td>
                 <td>
                     ${amendment.document_path 
-                        ? `<a href="../../../Backend/Amandements/requetes_ajax/${amendment.document_path}" target="_blank">${amendment.nom_document || 'Voir le document'}</a>` 
+                        ? `<a href="../../../PFE_SONATRACH/Backend/Amandements/requetes_ajax/${amendment.document_path}" target="_blank">${amendment.nom_document || 'Voir le document'}</a>` 
                         : 'Aucun document'}
                 </td>
                 <td>   
