@@ -1,0 +1,149 @@
+CREATE TABLE agence (
+  id        int(10) NOT NULL AUTO_INCREMENT, 
+  code      varchar(50) NOT NULL UNIQUE, 
+  label     varchar(50) NOT NULL UNIQUE, 
+  adresse   varchar(50) NOT NULL, 
+  banque_id int(10) NOT NULL, 
+  PRIMARY KEY (id));
+CREATE TABLE Amandement (
+  id               int(10) NOT NULL AUTO_INCREMENT, 
+  num_amd          varchar(50) NOT NULL UNIQUE, 
+  date_sys         date NOT NULL, 
+  date_prorogation date, 
+  montant_amd      numeric(15, 5), 
+  garantie_id      int(10) NOT NULL, 
+  Type_amd_id      int(10) NOT NULL, 
+  PRIMARY KEY (id));
+CREATE TABLE appel_offre (
+  id               int(10) NOT NULL AUTO_INCREMENT, 
+  date_appel_offre date NOT NULL, 
+  num_appel_offre  varchar(50) NOT NULL UNIQUE, 
+  PRIMARY KEY (id));
+CREATE TABLE authentification (
+  id          int(10) NOT NULL AUTO_INCREMENT, 
+  num_auth    varchar(50) NOT NULL UNIQUE, 
+  date_depo   date NOT NULL, 
+  date_auth   date NOT NULL, 
+  garantie_id int(10) NOT NULL, 
+  PRIMARY KEY (id));
+CREATE TABLE banque (
+  id    int(10) NOT NULL AUTO_INCREMENT, 
+  code  varchar(5) NOT NULL UNIQUE, 
+  label varchar(50) NOT NULL UNIQUE, 
+  PRIMARY KEY (id));
+CREATE TABLE direction (
+  id      int(10) NOT NULL AUTO_INCREMENT, 
+  code    varchar(5) NOT NULL UNIQUE, 
+  libelle varchar(50) NOT NULL UNIQUE, 
+  PRIMARY KEY (id));
+CREATE TABLE document_amandement (
+  id            int(10) NOT NULL AUTO_INCREMENT, 
+  nom_document  varchar(50) NOT NULL UNIQUE, 
+  document_path varchar(100) NOT NULL, 
+  garantie_id   int(10) NOT NULL, 
+  Amandement_id int(10) NOT NULL, 
+  PRIMARY KEY (id));
+CREATE TABLE document_auth (
+  id                  int(10) NOT NULL AUTO_INCREMENT, 
+  nom_document        varchar(50) NOT NULL UNIQUE, 
+  document_path       varchar(100) NOT NULL, 
+  authentification_id int(10) NOT NULL, 
+  PRIMARY KEY (id));
+CREATE TABLE document_garantie (
+  id            int(10) NOT NULL AUTO_INCREMENT, 
+  nom_document  varchar(50) NOT NULL UNIQUE, 
+  document_path varchar(100) NOT NULL, 
+  PRIMARY KEY (id));
+CREATE TABLE document_liberation (
+  id            int(10) NOT NULL AUTO_INCREMENT, 
+  nom_document  varchar(50) NOT NULL UNIQUE, 
+  document_path varchar(100) NOT NULL, 
+  liberation_id int(10) NOT NULL, 
+  PRIMARY KEY (id));
+CREATE TABLE fournisseur (
+  id               int(10) NOT NULL AUTO_INCREMENT, 
+  code_fournisseur varchar(50) NOT NULL UNIQUE, 
+  nom_fournisseur  varchar(50) NOT NULL UNIQUE, 
+  raison_sociale   varchar(255) NOT NULL, 
+  pays_id          int(10) NOT NULL, 
+  PRIMARY KEY (id));
+CREATE TABLE garantie (
+  id             int(10) NOT NULL AUTO_INCREMENT, 
+  num_garantie   varchar(50) NOT NULL UNIQUE, 
+  date_creation  date NOT NULL, 
+  date_emission  date NOT NULL, 
+  date_validite  date NOT NULL, 
+  montant        numeric(15, 3) NOT NULL, 
+  direction_id   int(10) NOT NULL, 
+  fournisseur_id int(10) NOT NULL, 
+  monnaie_id     int(10) NOT NULL, 
+  agence_id      int(10) NOT NULL, 
+  appel_offre_id int(10) NOT NULL, 
+  PRIMARY KEY (id));
+CREATE TABLE image_users (
+  id         int(10) NOT NULL AUTO_INCREMENT, 
+  nom_image  varchar(50) NOT NULL, 
+  image_path varchar(100) NOT NULL, 
+  usersid    int(10) NOT NULL, 
+  PRIMARY KEY (id));
+CREATE TABLE liberation (
+  id                 int(10) NOT NULL AUTO_INCREMENT, 
+  num                int(10) NOT NULL, 
+  date_liberation    date NOT NULL, 
+  Type_liberation_id int(10) NOT NULL, 
+  garantie_id        int(10) NOT NULL, 
+  PRIMARY KEY (id));
+CREATE TABLE monnaie (
+  id      int(10) NOT NULL AUTO_INCREMENT, 
+  code    varchar(5) NOT NULL UNIQUE, 
+  label   varchar(50) NOT NULL UNIQUE, 
+  symbole varchar(3) NOT NULL, 
+  PRIMARY KEY (id));
+CREATE TABLE pays (
+  id    int(10) NOT NULL AUTO_INCREMENT, 
+  code  varchar(5) NOT NULL UNIQUE, 
+  label varchar(50) NOT NULL UNIQUE, 
+  PRIMARY KEY (id));
+CREATE TABLE Role (
+  id       int(10) NOT NULL AUTO_INCREMENT, 
+  nom_role char(50) NOT NULL UNIQUE, 
+  PRIMARY KEY (id));
+CREATE TABLE Type_amd (
+  id    int(10) NOT NULL AUTO_INCREMENT, 
+  code  varchar(5) NOT NULL UNIQUE, 
+  label varchar(50) NOT NULL, 
+  PRIMARY KEY (id));
+CREATE TABLE Type_liberation (
+  id    int(10) NOT NULL AUTO_INCREMENT, 
+  code  varchar(5) NOT NULL UNIQUE, 
+  label varchar(50) NOT NULL, 
+  PRIMARY KEY (id));
+CREATE TABLE users (
+  id          int(10) NOT NULL AUTO_INCREMENT, 
+  nom_user    varchar(50) NOT NULL, 
+  prenom_user varchar(50) NOT NULL, 
+  username    varchar(100) NOT NULL UNIQUE, 
+  password    varchar(100) NOT NULL, 
+  status      tinyint(1) NOT NULL, 
+  Role        int(10) NOT NULL, 
+  structure   int(10) NOT NULL, 
+  PRIMARY KEY (id));
+ALTER TABLE garantie ADD CONSTRAINT fk_agence_gar FOREIGN KEY (agence_id) REFERENCES agence (id);
+ALTER TABLE document_amandement ADD CONSTRAINT fk_amd_doc FOREIGN KEY (Amandement_id) REFERENCES Amandement (id);
+ALTER TABLE Amandement ADD CONSTRAINT fk_amd_type FOREIGN KEY (Type_amd_id) REFERENCES Type_amd (id);
+ALTER TABLE garantie ADD CONSTRAINT fk_appel_gar FOREIGN KEY (appel_offre_id) REFERENCES appel_offre (id);
+ALTER TABLE document_auth ADD CONSTRAINT fk_auth_doc FOREIGN KEY (authentification_id) REFERENCES authentification (id);
+ALTER TABLE agence ADD CONSTRAINT fk_banque_agence FOREIGN KEY (banque_id) REFERENCES banque (id);
+ALTER TABLE garantie ADD CONSTRAINT fk_dir_gar FOREIGN KEY (direction_id) REFERENCES direction (id);
+ALTER TABLE garantie ADD CONSTRAINT fk_fournisseur_gar FOREIGN KEY (fournisseur_id) REFERENCES fournisseur (id);
+ALTER TABLE Amandement ADD CONSTRAINT fk_gar_amd FOREIGN KEY (garantie_id) REFERENCES garantie (id);
+ALTER TABLE authentification ADD CONSTRAINT fk_gar_auth FOREIGN KEY (garantie_id) REFERENCES garantie (id);
+ALTER TABLE document_garantie ADD CONSTRAINT fk_gar_doc FOREIGN KEY () REFERENCES garantie ();
+ALTER TABLE liberation ADD CONSTRAINT fk_gar_lib FOREIGN KEY (garantie_id) REFERENCES garantie (id);
+ALTER TABLE document_liberation ADD CONSTRAINT fk_lib_doc FOREIGN KEY (liberation_id) REFERENCES liberation (id);
+ALTER TABLE liberation ADD CONSTRAINT fk_lib_type FOREIGN KEY (Type_liberation_id) REFERENCES Type_liberation (id);
+ALTER TABLE garantie ADD CONSTRAINT fk_monnaie_gar FOREIGN KEY (monnaie_id) REFERENCES monnaie (id);
+ALTER TABLE fournisseur ADD CONSTRAINT fk_pays_fournisseur FOREIGN KEY (pays_id) REFERENCES pays (id);
+ALTER TABLE users ADD CONSTRAINT fk_role_users FOREIGN KEY (Role) REFERENCES Role (id);
+ALTER TABLE users ADD CONSTRAINT fk_structure_user FOREIGN KEY (structure) REFERENCES direction (id);
+ALTER TABLE image_users ADD CONSTRAINT fk_users_image FOREIGN KEY (usersid) REFERENCES users (id);
