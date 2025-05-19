@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("../Template/header.php"); 
+require_once("../Template/header.php");
 require_once("../../db_connection/db_conn.php");
 
 // Retrieve garantie_id from the URL
@@ -18,7 +18,7 @@ $stmt->execute([$garantieId]);
 $garantie = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$garantie) {
-    echo "Garantie not found."; 
+    echo "Garantie not found.";
     exit;
 }
 
@@ -55,13 +55,26 @@ $typeAmandements = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <main>
     <h2>Liste des Amendements de la Garantie n°<?= htmlspecialchars($garantie['num_garantie']) ?></h2>
-    <button id="ajouterAman">Ajouter Amendement</button>
+    <div class="actiob-bar">
+        <div class="search-container">
+            <div class="form-group">
+                <div class="input-with-icon">
+                    <input type="text" id="searchAmd" placeholder="Rechercher un Amandement" class="form-control">
+                </div>
+            </div>
+        </div>
+        <div class="actiob-buttons">
+            <button id="ajouterAman" class="btn btn-primary">  <i class='bx bx-plus-circle'></i> Ajouter Amendement</button>
+        </div>
+    </div>
+
+
 
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>#</th>
                     <th>Num Amendement</th>
                     <th>Date Amendement</th>
                     <th>Date Pronongation</th>
