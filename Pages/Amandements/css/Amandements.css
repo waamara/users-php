@@ -1,15 +1,38 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
 :root {
-  --primary-color: #2563eb;
-  --primary-hover: #1d4ed8;
-  --secondary-color: #f3f4f6;
-  --text-color: #1f2937;
-  --border-color: #e5e7eb;
-  --danger-color: #ef4444;
-  --success-color: #10b981;
-  --warning-color: #f59e0b;
-  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  --radius: 0.375rem;
-  --table-header-bg: #dbeafe; /* Light blue header background */
+  /* Main color palette */
+  --primary: #2563eb;
+  --primary-light: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --secondary: #6c757d;
+  --success: #28a745;
+  --danger: #dc3545;
+  --warning: #ffc107;
+  --info: #17a2b8;
+  
+  /* Neutral colors */
+  --light: #ffffff;
+  --dark: #212529;
+  --grey-50: #f8f9fa;
+  --grey-100: #e9ecef;
+  --grey-200: #dee2e6;
+  --grey-300: #ced4da;
+  --grey-400: #adb5bd;
+  --grey-500: #6c757d;
+  --grey-600: #495057;
+  --grey-700: #343a40;
+  --grey-800: #212529;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 3px 5px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 12px -3px rgba(0, 0, 0, 0.08), 0 3px 5px -2px rgba(0, 0, 0, 0.04);
+  
+  /* Border radius */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
 }
 
 /* Reset and base styles */
@@ -20,40 +43,55 @@
 }
 
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Poppins', sans-serif;
   line-height: 1.5;
-  color: var(--text-color);
-  background-color: #f9fafb;
+  color: var(--grey-700);
+  background-color: var(--grey-50);
 }
 
 main {
-  padding: 1rem;
+  padding: 1.5rem;
   width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
 h2 {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 600;
-  margin-bottom: 1rem;
-  color: var(--text-color);
+  margin-bottom: 1.5rem;
+  color: var(--primary);
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--primary);
 }
 
 /* Button styles */
 #ajouterAman {
-  background-color: var(--primary-color);
+  background-color: var(--primary);
   color: white;
   border: none;
-  border-radius: var(--radius);
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
+  border-radius: var(--radius-md);
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9375rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
-  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.25);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #ajouterAman:hover {
-  background-color: var(--primary-hover);
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(37, 99, 235, 0.3);
+}
+
+#ajouterAman:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
 }
 
 /* Table styles */
@@ -62,14 +100,16 @@ h2 {
   overflow-x: auto;
   margin-top: 1rem;
   position: relative;
-  border-radius: var(--radius);
-  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--grey-200);
+  background-color: var(--light);
+  box-shadow: var(--shadow-lg);
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   min-width: 100%;
 }
 
@@ -77,33 +117,38 @@ thead {
   position: sticky;
   top: 0;
   z-index: 10;
-  background-color: var(--table-header-bg);
+  background-color: var(--grey-100);
 }
 
 th {
   text-align: left;
-  padding: 0.75rem 0.5rem;
+  padding: 0.75rem 1.25rem;
   font-weight: 600;
-  border-bottom: 1px solid var(--border-color);
+  color: var(--grey-700);
+  border-bottom: 1px solid var(--grey-200);
   white-space: nowrap;
 }
 
 td {
-  padding: 0.75rem 0.5rem;
-  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--grey-200);
   vertical-align: middle;
+  color: var(--grey-600);
+}
+
+tbody tr {
+  transition: background-color 0.2s ease;
 }
 
 tbody tr:hover {
-  background-color: rgba(243, 244, 246, 0.5);
+  background-color: rgba(37, 99, 235, 0.05);
 }
 
 /* Action buttons in the table */
 td div {
   display: flex;
-  flex-direction: row; /* Buttons in a row */
+  justify-content: flex-end;
   gap: 0.5rem;
-  cursor: default; /* Normal cursor */
 }
 
 td form {
@@ -114,45 +159,44 @@ td input[type="text"] {
   display: none; /* Hide the ID inputs */
 }
 
-td button {
-  padding: 0.375rem 0.5rem;
-  border-radius: var(--radius);
-  font-size: 0.75rem;
-  font-weight: 500;
+/* Modify button styling */
+.modify-btn {
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--radius-md);
+  background-color: var(--primary);
+  color: white;
+  border: none;
   cursor: pointer;
-  border: 1px solid transparent;
-  transition: all 0.2s;
-  white-space: nowrap;
-  min-width: 0;
+  transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
 }
 
-/* Button colors */
-td button:first-child {
-  background-color: var(--success-color);
-  color: white;
+.modify-btn:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
 }
 
-td button:nth-child(2) {
-  background-color: var(--primary-color);
-  color: white;
-}
-
-td button:nth-child(3) {
-  background-color: var(--danger-color);
-  color: white;
+.modify-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
 }
 
 /* Document link styling */
 td a {
-  color: var(--primary-color);
+  color: var(--primary);
   text-decoration: none;
-  transition: color 0.2s;
+  transition: color 0.2s ease;
+  font-weight: 500;
 }
 
 td a:hover {
+  color: var(--primary-dark);
   text-decoration: underline;
 }
 
@@ -169,15 +213,18 @@ td a:hover {
   align-items: center;
   z-index: 999;
   animation: fadeIn 0.3s ease-in-out;
+  backdrop-filter: blur(5px);
 }
 
 .modal-content {
   background: white;
-  border-radius: var(--radius);
-  padding: 2rem;
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
   width: 90%;
   max-width: 600px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
   animation: scaleIn 0.3s ease-in-out;
   position: relative;
 }
@@ -187,89 +234,168 @@ td a:hover {
   top: 1rem;
   right: 1rem;
   font-size: 1.5rem;
-  color: #6b7280;
+  color: var(--grey-500);
   cursor: pointer;
-  transition: color 0.2s;
+  transition: all 0.3s ease;
+  height: 2rem;
+  width: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--grey-50);
 }
 
 .close-btn:hover {
-  color: var(--danger-color);
+  color: var(--danger);
+  background-color: var(--grey-100);
+  transform: rotate(90deg);
 }
 
-/* Form styles */
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-group label {
+/* Modal title - smaller and more compact */
+#modalTitle {
+  font-size: 1.125rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
-  display: block;
-  color: var(--text-color);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--grey-200);
+  color: var(--grey-700);
 }
 
+/* Form layout - more compact */
+#AmandementForm {
+  display: grid;
+  grid-gap: 0.75rem;
+}
+
+/* Form groups - reduced spacing */
+.form-group {
+  margin-bottom: 0.75rem;
+  position: relative;
+}
+
+/* Labels - smaller and more compact */
+.form-group label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+  color: var(--grey-700);
+  font-size: 0.8125rem;
+}
+
+/* Input fields - more compact */
 .form-group select,
 .form-group input,
 .form-group textarea {
   width: 100%;
-  padding: 0.8rem;
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--grey-300);
+  border-radius: var(--radius-md);
   font-size: 0.875rem;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  background-color: var(--light);
+  font-family: 'Poppins', sans-serif;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.form-group select:hover,
+.form-group input:hover,
+.form-group textarea:hover {
+  border-color: var(--grey-400);
 }
 
 .form-group select:focus,
 .form-group input:focus,
 .form-group textarea:focus {
-  border-color: var(--primary-color);
   outline: none;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
+/* File input specific styling */
+input[type="file"] {
+  padding: 0.375rem;
+  font-size: 0.8125rem;
+  background-color: var(--grey-50);
+  border: 1px dashed var(--grey-300);
+}
+
+/* Validation messages - more compact */
 .validation-message {
-  color: var(--danger-color);
+  color: var(--danger);
   font-size: 0.75rem;
   margin-top: 0.25rem;
+  padding-left: 0.375rem;
+  border-left: 2px solid var(--danger);
   display: none;
 }
 
+/* Form buttons container */
+#AmandementForm > .btn {
+  margin-top: 0.5rem;
+}
+
+/* Form buttons - smaller and more compact */
 .btn {
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: var(--radius);
   padding: 0.5rem 1rem;
-  font-size: 0.875rem;
+  border-radius: var(--radius-md);
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
+  border: none;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin-right: 0.5rem;
 }
 
 .btn-primary {
-  background-color: var(--primary-color);
+  background-color: var(--primary);
+  color: white;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.25);
 }
 
 .btn-primary:hover {
-  background-color: var(--primary-hover);
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
 }
 
 .btn-secondary {
-  background-color: var(--secondary-color);
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
+  background-color: var(--grey-100);
+  color: var(--grey-600);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-secondary:hover {
-  background-color: #e5e7eb;
+  background-color: var(--grey-200);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.btn-secondary:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Error message */
 .error-message {
-  color: var(--danger-color);
-  font-size: 0.875rem;
+  color: var(--danger);
+  font-size: 0.75rem;
   margin-top: 0.5rem;
   display: none;
+}
+
+/* Error input styling */
+.error-input {
+  border-color: var(--danger) !important;
+  background-color: rgba(220, 53, 69, 0.03);
 }
 
 /* Animations */
@@ -289,14 +415,122 @@ td a:hover {
   }
 }
 
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
 /* Responsive adjustments */
+@media (max-width: 1200px) {
+  main {
+    padding: 1.25rem;
+  }
+}
+
 @media (max-width: 768px) {
+  main {
+    padding: 1rem;
+  }
+  
   .modal-content {
     width: 95%;
-    padding: 1.5rem;
+    padding: 1.25rem;
+  }
+  
+  #AmandementForm {
+    grid-gap: 0.5rem;
+  }
+  
+  .form-group {
+    margin-bottom: 0.5rem;
   }
   
   td div {
     flex-direction: column;
   }
+  
+  .modify-btn {
+    width: 100%;
+  }
+  
+  th, td {
+    padding: 0.75rem 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  #modalTitle {
+    font-size: 1rem;
+  }
+  
+  .modal-content {
+    padding: 1rem;
+  }
+  
+  .form-group label {
+    font-size: 0.75rem;
+  }
+  
+  .form-group select,
+  .form-group input {
+    padding: 0.4375rem 0.625rem;
+    font-size: 0.8125rem;
+  }
+  
+  .btn {
+    padding: 0.4375rem 0.875rem;
+    font-size: 0.8125rem;
+  }
+}
+
+/* SweetAlert2 customization */
+.swal2-popup {
+  font-family: 'Poppins', sans-serif !important;
+  border-radius: var(--radius-lg) !important;
+  padding: 2em !important;
+}
+
+.swal2-title {
+  color: var(--grey-700) !important;
+  font-weight: 600 !important;
+}
+
+.swal2-html-container {
+  color: var(--grey-600) !important;
+}
+
+.swal2-confirm {
+  background-color: var(--primary) !important;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.25) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.swal2-confirm:hover {
+  background-color: var(--primary-dark) !important;
+  box-shadow: 0 6px 12px rgba(37, 99, 235, 0.3) !important;
+}
+
+/* Improved scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--grey-100);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--grey-300);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--grey-400);
 }
