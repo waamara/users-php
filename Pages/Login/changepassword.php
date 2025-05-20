@@ -38,21 +38,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $old_password = trim($_POST['old_password']);
     $new_password = trim($_POST['new_password']);
     $confirm_password = trim($_POST['confirm_password']);
-    
+
     // Validation
     $is_valid = true;
-    
+
     // Vérifier l'ancien mot de passe
     if (empty($old_password)) {
         $old_password_error = "Veuillez entrer votre mot de passe actuel";
         $is_valid = false;
-    } elseif (!password_verify($old_password, $current_password)) { 
-    // NOTE: Si le mot de passe était haché, il faudrait utiliser password_verify() comme ceci:
-    // elseif (!password_verify($old_password, $current_password)) {
+    } elseif (!password_verify($old_password, $current_password)) {
+        // NOTE: Si le mot de passe était haché, il faudrait utiliser password_verify() comme ceci:
+        // elseif (!password_verify($old_password, $current_password)) {
         $old_password_error = "Le mot de passe actuel est incorrect";
         $is_valid = false;
     }
-    
+
     // Vérifier le nouveau mot de passe
     if (empty($new_password)) {
         $new_password_error = "Veuillez entrer un nouveau mot de passe";
@@ -61,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $new_password_error = "Le mot de passe doit contenir au moins 8 caractères";
         $is_valid = false;
     }
-    
+
     // Vérifier la confirmation du mot de passe
     if (empty($confirm_password)) {
         $confirm_password_error = "Veuillez confirmer votre nouveau mot de passe";
@@ -70,19 +70,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $confirm_password_error = "Les mots de passe ne correspondent pas";
         $is_valid = false;
     }
-    
+
     // Si tout est valide, mettre à jour le mot de passe
     if ($is_valid) {
         try {
             // Hacher le nouveau mot de passe
             $hashed_password = $new_password;
-            
+
             // Mettre à jour le mot de passe dans la base de données
             $update_stmt = $pdo->prepare("UPDATE users SET password = :password WHERE id = :user_id");
             $update_stmt->bindParam(':password', $hashed_password);
             $update_stmt->bindParam(':user_id', $_SESSION['user_id']);
             $update_stmt->execute();
-            
+
             // Vérifie si une entrée existe déjà
             $check_stmt = $pdo->prepare("SELECT COUNT(*) FROM first_login WHERE user_id = :user_id");
             $check_stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
@@ -94,11 +94,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $insert_stmt = $pdo->prepare("INSERT INTO first_login (user_id) VALUES (:user_id)");
                 $insert_stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
                 $insert_stmt->execute();
-            }    
-            
+            }
+
             // Définir un indicateur de succès pour JavaScript
             $password_changed = true;
-            
         } catch (PDOException $e) {
             $error_message = "Erreur lors de la mise à jour du mot de passe: " . $e->getMessage();
         }
@@ -107,6 +106,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -115,498 +115,511 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
     <style>
-    /* Votre CSS ici - inchangé */
-    :root {
-        --primary: #1a56db;
-        --primary-light: #3b82f6;
-        --primary-dark: #1e40af;
-        --primary-hover: #2563eb;
-        --primary-focus: rgba(59, 130, 246, 0.25);
-        --secondary: #64748b;
-        --success: #10b981;
-        --danger: #ef4444;
-        --warning: #f59e0b;
-        --info: #3b82f6;
-        --gray-50: #f9fafb;
-        --gray-100: #f3f4f6;
-        --gray-200: #e5e7eb;
-        --gray-300: #d1d5db;
-        --gray-400: #9ca3af;
-        --gray-500: #6b7280;
-        --gray-600: #4b5563;
-        --gray-700: #374151;
-        --gray-800: #1f2937;
-        --gray-900: #111827;
-        --border-radius: 0.5rem;
-        --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        --box-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        --transition: all 0.3s ease;
-    }
-
-    #dynamic-content {
-        padding: 0;
-        margin-top: -10px;
-        animation: fadeIn 0.3s ease-in-out;
-        overflow-y: auto;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0;
-    }
-
-    .main-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary);
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-    }
-
-    .main-title i {
-        margin-right: 0.5rem;
-        font-size: 1.5rem;
-    }
-
-    .card {
-        background-color: white;
-        border-radius: var(--border-radius);
-        box-shadow: var(--box-shadow);
-        overflow: hidden;
-        margin-bottom: 0;
-        transition: var(--transition);
-        min-height: auto;
-        max-height: 100%;
-        overflow-y: auto;
-    }
-
-    .card:hover {
-        box-shadow: var(--box-shadow-lg);
-    }
-
-    .card-body {
-        padding: 1.25rem;
-    }
-
-    .card-subtitle {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--primary);
-        margin-bottom: 0.75rem;
-        display: flex;
-        align-items: center;
-    }
-
-    .card-subtitle i {
-        margin-right: 0.5rem;
-        font-size: 1.1rem;
-    }
-
-    .divider {
-        height: 1px;
-        background-color: var(--gray-200);
-        margin: 0.75rem 0;
-        border: none;
-    }
-
-    .row {
-        display: flex;
-        flex-wrap: wrap;
-        margin: -0.25rem;
-    }
-
-    .col-md-4 {
-        flex: 0 0 33.333333%;
-        max-width: 33.333333%;
-        padding: 0.25rem;
-    }
-
-    .col-md-6 {
-        flex: 0 0 50%;
-        max-width: 50%;
-        padding: 0.25rem;
-    }
-
-    .col-md-12 {
-        flex: 0 0 100%;
-        max-width: 100%;
-        padding: 0.25rem;
-    }
-
-    .form-group {
-        margin-bottom: 1rem;
-    }
-
-    .form-label {
-        display: block;
-        font-weight: 500;
-        margin-bottom: 0.25rem;
-        color: var(--gray-700);
-        font-size: 0.9rem;
-        max-width: 500px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 0.6rem 1rem;
-        border: 1px solid var(--gray-300);
-        border-radius: var(--border-radius);
-        font-size: 0.95rem;
-        transition: var(--transition);
-    }
-
-    .form-control:focus {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px var(--primary-focus);
-        outline: none;
-    }
-
-    .input-group {
-        position: relative;
-        max-width: 500px;
-        margin: 0 auto;
-    }
-
-    .input-group input {
-        width: 100%;
-        padding: 0.6rem 1rem 0.6rem 2.5rem;
-        border: 1px solid var(--gray-300);
-        border-radius: var(--border-radius);
-        font-size: 0.95rem;
-        transition: var(--transition);
-    }
-
-    .input-group input:focus {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px var(--primary-focus);
-        outline: none;
-    }
-
-    .input-group i {
-        position: absolute;
-        left: 0.75rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--gray-500);
-        font-size: 1.1rem;
-        transition: var(--transition);
-    }
-
-    .input-group input:focus + i {
-        color: var(--primary);
-    }
-
-    .toggle-password {
-        position: absolute;
-        right: 0.75rem;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        color: var(--gray-500);
-        cursor: pointer;
-        font-size: 1.1rem;
-        transition: var(--transition);
-    }
-
-    .toggle-password:hover {
-        color: var(--gray-700);
-    }
-
-    .error-message {
-        color: var(--danger);
-        font-size: 0.8rem;
-        margin-top: 0.25rem;
-        display: block;
-        min-height: 1rem;
-        max-width: 500px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .password-strength {
-        margin-top: 0.25rem;
-        max-width: 500px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .strength-meter {
-        height: 4px;
-        background-color: var(--gray-200);
-        border-radius: 2px;
-        overflow: hidden;
-        margin-bottom: 0.25rem;
-    }
-
-    .strength-meter-fill {
-        height: 100%;
-        width: 0;
-        transition: width 0.3s ease;
-    }
-
-    .strength-text {
-        font-size: 0.8rem;
-        color: var(--gray-600);
-    }
-
-    .weak {
-        width: 33%;
-        background-color: var(--danger);
-    }
-
-    .medium {
-        width: 66%;
-        background-color: var(--warning);
-    }
-
-    .strong {
-        width: 100%;
-        background-color: var(--success);
-    }
-
-    .password-requirements {
-        margin-top: 0.75rem;
-        padding: 0.75rem;
-        background-color: var(--gray-50);
-        border-radius: var(--border-radius);
-        border: 1px solid var(--gray-200);
-        max-width: 500px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .password-requirements h5 {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--gray-700);
-        margin-bottom: 0.4rem;
-    }
-
-    .requirement-item {
-        display: flex;
-        align-items: center;
-        margin-bottom: 0.2rem;
-        font-size: 0.8rem;
-        color: var(--gray-600);
-    }
-
-    .requirement-item i {
-        margin-right: 0.4rem;
-        font-size: 0.9rem;
-    }
-
-    .requirement-valid {
-        color: var(--success);
-    }
-
-    .requirement-invalid {
-        color: var(--gray-400);
-    }
-
-    .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.6rem 1.25rem;
-        font-size: 0.95rem;
-        font-weight: 500;
-        line-height: 1.5;
-        text-align: center;
-        white-space: nowrap;
-        vertical-align: middle;
-        cursor: pointer;
-        user-select: none;
-        border: 1px solid transparent;
-        border-radius: var(--border-radius);
-        transition: var(--transition);
-    }
-
-    .btn-primary {
-        color: #fff;
-        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-        border-color: var(--primary);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .btn-primary:hover {
-        background: linear-gradient(135deg, var(--primary-hover), var(--primary));
-        border-color: var(--primary-hover);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
-    }
-
-    .btn-primary:active {
-        transform: translateY(0);
-    }
-
-    .btn-primary::before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        transition: width 0.6s ease, height 0.6s ease;
-    }
-
-    .btn-primary:hover::before {
-        width: 300px;
-        height: 300px;
-    }
-
-    .btn-primary i {
-        margin-right: 0.5rem;
-        font-size: 1.1rem;
-    }
-
-    .btn-secondary {
-        color: #fff;
-        background-color: var(--secondary);
-        border-color: var(--secondary);
-    }
-
-    .btn-secondary:hover {
-        background-color: #4b5563;
-        border-color: #4b5563;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 6px rgba(100, 116, 139, 0.25);
-    }
-
-    .action-buttons {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 1rem;
-        gap: 0.5rem;
-        max-width: 500px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .alert {
-        padding: 0.75rem;
-        border-radius: var(--border-radius);
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .alert-danger {
-        background-color: rgba(239, 68, 68, 0.1);
-        border-left: 4px solid var(--danger);
-        color: #b91c1c;
-    }
-
-    .alert-success {
-        background-color: rgba(16, 185, 129, 0.1);
-        border-left: 4px solid var(--success);
-        color: #065f46;
-    }
-
-    .alert i {
-        font-size: 1.1rem;
-    }
-
-    .detail-value {
-        font-weight: 500;
-        color: var(--gray-800);
-    }
-
-    .required-asterisk {
-        color: var(--danger);
-        margin-left: 2px;
-    }
-
-    .welcome-message {
-        background-color: var(--primary);
-        color: white;
-        padding: 1rem;
-        border-radius: var(--border-radius) var(--border-radius) 0 0;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .welcome-message::before {
-        content: "";
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 60%);
-        z-index: 0;
-        animation: pulse 15s infinite linear;
-    }
-
-    @keyframes pulse {
-        0% {
-            transform: scale(1);
-            opacity: 0.3;
+        /* Votre CSS ici - inchangé */
+        :root {
+            --primary: #1a56db;
+            --primary-light: #3b82f6;
+            --primary-dark: #1e40af;
+            --primary-hover: #2563eb;
+            --primary-focus: rgba(59, 130, 246, 0.25);
+            --secondary: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --border-radius: 0.5rem;
+            --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --box-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
         }
-        50% {
-            transform: scale(1.05);
-            opacity: 0.5;
+
+        #dynamic-content {
+            padding: 0;
+            margin-top: -10px;
+            animation: fadeIn 0.3s ease-in-out;
+            overflow-y: auto;
         }
-        100% {
-            transform: scale(1);
-            opacity: 0.3;
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
-    }
 
-    .welcome-message h1 {
-        font-size: 1.4rem;
-        font-weight: 700;
-        margin-bottom: 0.4rem;
-        position: relative;
-        z-index: 1;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0;
+        }
 
-    .welcome-message p {
-        font-size: 0.9rem;
-        opacity: 0.9;
-        max-width: 800px;
-        position: relative;
-        z-index: 1;
-        margin-bottom: 0;
-    }
+        .main-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
 
-    @media (max-width: 768px) {
+        .main-title i {
+            margin-right: 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            margin-bottom: 0;
+            transition: var(--transition);
+            min-height: auto;
+            max-height: 100%;
+            overflow-y: auto;
+        }
+
+        .card:hover {
+            box-shadow: var(--box-shadow-lg);
+        }
+
+        .card-body {
+            padding: 1.25rem;
+        }
+
+        .card-subtitle {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-subtitle i {
+            margin-right: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--gray-200);
+            margin: 0.75rem 0;
+            border: none;
+        }
+
         .row {
-            flex-direction: column;
+            display: flex;
+            flex-wrap: wrap;
+            margin: -0.25rem;
         }
-        .col-md-4, .col-md-6, .col-md-12 {
+
+        .col-md-4 {
+            flex: 0 0 33.333333%;
+            max-width: 33.333333%;
+            padding: 0.25rem;
+        }
+
+        .col-md-6 {
+            flex: 0 0 50%;
+            max-width: 50%;
+            padding: 0.25rem;
+        }
+
+        .col-md-12 {
             flex: 0 0 100%;
             max-width: 100%;
+            padding: 0.25rem;
         }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            color: var(--gray-700);
+            font-size: 0.9rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-focus);
+            outline: none;
+        }
+
+        .input-group {
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-focus);
+            outline: none;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-500);
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        .input-group input:focus+i {
+            color: var(--primary);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--gray-500);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        .toggle-password:hover {
+            color: var(--gray-700);
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            display: block;
+            min-height: 1rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .password-strength {
+            margin-top: 0.25rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .strength-meter {
+            height: 4px;
+            background-color: var(--gray-200);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 0.25rem;
+        }
+
+        .strength-meter-fill {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s ease;
+        }
+
+        .strength-text {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+        }
+
+        .weak {
+            width: 33%;
+            background-color: var(--danger);
+        }
+
+        .medium {
+            width: 66%;
+            background-color: var(--warning);
+        }
+
+        .strong {
+            width: 100%;
+            background-color: var(--success);
+        }
+
+        .password-requirements {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background-color: var(--gray-50);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--gray-200);
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .password-requirements h5 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 0.4rem;
+        }
+
+        .requirement-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.2rem;
+            font-size: 0.8rem;
+            color: var(--gray-600);
+        }
+
+        .requirement-item i {
+            margin-right: 0.4rem;
+            font-size: 0.9rem;
+        }
+
+        .requirement-valid {
+            color: var(--success);
+        }
+
+        .requirement-invalid {
+            color: var(--gray-400);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.6rem 1.25rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            line-height: 1.5;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
+            user-select: none;
+            border: 1px solid transparent;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            color: #fff;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-color: var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover), var(--primary));
+            border-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .btn-primary:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary i {
+            margin-right: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .btn-secondary {
+            color: #fff;
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+            border-color: #4b5563;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(100, 116, 139, 0.25);
+        }
+
         .action-buttons {
-            flex-direction: column;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            gap: 0.5rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
         }
+
+        .alert {
+            padding: 0.75rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-danger {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--danger);
+            color: #b91c1c;
+        }
+
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--success);
+            color: #065f46;
+        }
+
+        .alert i {
+            font-size: 1.1rem;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: var(--gray-800);
+        }
+
+        .required-asterisk {
+            color: var(--danger);
+            margin-left: 2px;
+        }
+
+        .welcome-message {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-message::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 60%);
+            z-index: 0;
+            animation: pulse 15s infinite linear;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+        }
+
         .welcome-message h1 {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            position: relative;
+            z-index: 1;
         }
-    }
+
+        .welcome-message p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            max-width: 800px;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 768px) {
+            .row {
+                flex-direction: column;
+            }
+
+            .col-md-4,
+            .col-md-6,
+            .col-md-12 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .welcome-message h1 {
+                font-size: 1.3rem;
+            }
+        }
     </style>
 </head>
+
 <body>
     <main id="dynamic-content">
         <div class="container">
             <!-- Titre Principal -->
             <h2 class="main-title">
-                
+
             </h2>
 
             <!-- Carte principale -->
@@ -624,12 +637,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <hr class="divider">
 
                     <?php if (!empty($error_message)): ?>
-                    <div class="alert alert-danger">
-                        <i class='bx bx-error-circle'></i>
-                        <span><?php echo $error_message; ?></span>
-                    </div>
+                        <div class="alert alert-danger">
+                            <i class='bx bx-error-circle'></i>
+                            <span><?php echo $error_message; ?></span>
+                        </div>
                     <?php endif; ?>
-                    
+
                     <form id="passwordForm" method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
                         <div class="row">
                             <div class="col-md-12">
@@ -672,7 +685,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -690,7 +703,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </div>
                             </div>
                         </div>
-
+                        <div>
+                            <label for="imageUpload">Upload an image:</label>
+                            <input type="file" id="imageUpload" name="image" accept="image/*">
+                        </div>                            
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="password-requirements">
@@ -724,7 +740,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="action-buttons">
                             <button type="submit" class="btn btn-primary">
                                 <i class='bx bx-check'></i> Changer mon mot de passe
@@ -744,10 +760,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Passage des variables PHP au JavaScript
         var passwordChanged = <?php echo $password_changed ? 'true' : 'false'; ?>;
     </script>
-    
+
     <!-- Inclusion du fichier JavaScript externe -->
     <script src="js/changepassword.js"></script>
 </body>
+
 </html>
 <?php
 require_once('../Template/footer.php');
