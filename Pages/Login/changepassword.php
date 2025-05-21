@@ -1,59 +1,93 @@
 <?php
-// Démarrer la session
+// Start session and include required files
 session_start();
 require_once("../Template/header.php");
+require_once("../../db_connection/db_conn.php");
 
-// Vérifier si l'utilisateur est connecté
+// Redirect if not logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
 }
 
-// Inclure la connexion à la base de données
-require_once("../../db_connection/db_conn.php");
-
-// Récupérer les informations de l'utilisateur
-$stmt = $pdo->prepare("SELECT nom_user, prenom_user, username, Role FROM users WHERE id = :user_id");
-$stmt->bindParam(':user_id', $_SESSION['user_id']);
-$stmt->execute();
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-// Récupérer le mot de passe actuel de l'utilisateur depuis la base de données
-$stmt_pwd = $pdo->prepare("SELECT password FROM users WHERE id = :user_id");
-$stmt_pwd->bindParam(':user_id', $_SESSION['user_id']);
-$stmt_pwd->execute();
-$current_password = $stmt_pwd->fetchColumn();
-
-// Initialiser les variables
+// Initialize variables
+$user_id = $_SESSION['user_id'];
 $error_message = "";
 $success_message = "";
 $old_password_error = "";
 $new_password_error = "";
 $confirm_password_error = "";
+$image_error = "";
 $password_changed = false;
 
-// Traitement du formulaire de changement de mot de passe
+// Get user information
+$stmt = $pdo->prepare("SELECT nom_user, prenom_user, username, Role, password FROM users WHERE id = :user_id");
+$stmt->bindParam(':user_id', $user_id);
+$stmt->execute();
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+$current_password = $user['password'];
+
+// Process form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Récupérer et nettoyer les données
+    // Get form data
     $old_password = trim($_POST['old_password']);
     $new_password = trim($_POST['new_password']);
     $confirm_password = trim($_POST['confirm_password']);
+    
+    // Validate form data
+    $is_valid = validateFormData($old_password, $new_password, $confirm_password, $current_password, 
+                               $old_password_error, $new_password_error, $confirm_password_error);
+    
+    // Validate image
+    $image_valid = validateImage($_FILES['image'], $image_error);
+    
+    // Process if all validations pass
+    if ($is_valid && $image_valid) {
+        try {
+            // Begin transaction
+            $pdo->beginTransaction();
+            
+            // Update password
+            updatePassword($pdo, $new_password, $user_id);
+            
+            // Process and save image
+            processImage($pdo, $_FILES['image'], $user_id);
+            
+            // Update first login status
+            updateFirstLoginStatus($pdo, $user_id);
+            
+            // Commit transaction
+            $pdo->commit();
+            
+            // Set success flag
+            $password_changed = true;
+            $success_message = "Votre mot de passe et votre photo de profil ont été mis à jour avec succès.";
+            
+        } catch (Exception $e) {
+            // Rollback transaction on error
+            $pdo->rollBack();
+            $error_message = "Erreur lors de la mise à jour: " . $e->getMessage();
+        }
+    }
+}
 
-    // Validation
+/**
+ * Validate form data
+ */
+function validateFormData($old_password, $new_password, $confirm_password, $current_password, 
+                        &$old_password_error, &$new_password_error, &$confirm_password_error) {
     $is_valid = true;
-
-    // Vérifier l'ancien mot de passe
+    
+    // Validate old password
     if (empty($old_password)) {
         $old_password_error = "Veuillez entrer votre mot de passe actuel";
         $is_valid = false;
     } elseif (!password_verify($old_password, $current_password)) {
-        // NOTE: Si le mot de passe était haché, il faudrait utiliser password_verify() comme ceci:
-        // elseif (!password_verify($old_password, $current_password)) {
         $old_password_error = "Le mot de passe actuel est incorrect";
         $is_valid = false;
     }
-
-    // Vérifier le nouveau mot de passe
+    
+    // Validate new password
     if (empty($new_password)) {
         $new_password_error = "Veuillez entrer un nouveau mot de passe";
         $is_valid = false;
@@ -61,8 +95,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $new_password_error = "Le mot de passe doit contenir au moins 8 caractères";
         $is_valid = false;
     }
-
-    // Vérifier la confirmation du mot de passe
+    
+    // Validate password confirmation
     if (empty($confirm_password)) {
         $confirm_password_error = "Veuillez confirmer votre nouveau mot de passe";
         $is_valid = false;
@@ -70,43 +104,118 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $confirm_password_error = "Les mots de passe ne correspondent pas";
         $is_valid = false;
     }
+    
+    return $is_valid;
+}
 
-    // Si tout est valide, mettre à jour le mot de passe
-    if ($is_valid) {
-        try {
-            // Hacher le nouveau mot de passe
-            $hashed_password = $new_password;
+/**
+ * Validate uploaded image
+ */
+function validateImage($file, &$image_error) {
+    // Check if file was uploaded
+    if (!isset($file) || $file['error'] == UPLOAD_ERR_NO_FILE) {
+        $image_error = "Veuillez télécharger une photo de profil";
+        return false;
+    }
+    
+    // Check for upload errors
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        $image_error = "Erreur lors du téléchargement de l'image (Code: " . $file['error'] . ")";
+        return false;
+    }
+    
+    // Check file type
+    $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+    if (!in_array($file['type'], $allowed_types)) {
+        $image_error = "Seuls les formats JPG, JPEG, PNG et GIF sont acceptés";
+        return false;
+    }
+    
+    // Check file size (max 5MB)
+    if ($file['size'] > 5 * 1024 * 1024) {
+        $image_error = "La taille de l'image ne doit pas dépasser 5MB";
+        return false;
+    }
+    
+    return true;
+}
 
-            // Mettre à jour le mot de passe dans la base de données
-            $update_stmt = $pdo->prepare("UPDATE users SET password = :password WHERE id = :user_id");
-            $update_stmt->bindParam(':password', $hashed_password);
-            $update_stmt->bindParam(':user_id', $_SESSION['user_id']);
-            $update_stmt->execute();
+/**
+ * Update user password
+ */
+function updatePassword($pdo, $new_password, $user_id) {
+    $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+    $stmt = $pdo->prepare("UPDATE users SET password = :password WHERE id = :user_id");
+    $stmt->bindParam(':password', $hashed_password);
+    $stmt->bindParam(':user_id', $user_id);
+    $stmt->execute();
+}
 
-            // Vérifie si une entrée existe déjà
-            $check_stmt = $pdo->prepare("SELECT COUNT(*) FROM first_login WHERE user_id = :user_id");
-            $check_stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
-            $check_stmt->execute();
-            $exists = $check_stmt->fetchColumn();
+/**
+ * Process and save image
+ */
+function processImage($pdo, $file, $user_id) {
+    // Create upload directory if it doesn't exist
+    $upload_dir = "../../uploads/profile_images/";
+    if (!file_exists($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
+    
+    // Generate unique filename
+    $file_extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $new_filename = uniqid('profile_', true) . '.' . $file_extension;
+    $upload_path = $upload_dir . $new_filename;
+    
+    // Move uploaded file
+    if (!move_uploaded_file($file['tmp_name'], $upload_path)) {
+        throw new Exception("Erreur lors du téléchargement de l'image");
+    }
+    
+    // Save image info to database
+    $image_name = $file['name'];
+    $image_path = 'uploads/profile_images/' . $new_filename;
+    
+    // Check if user already has a profile image
+    $check_stmt = $pdo->prepare("SELECT COUNT(*) FROM image_users WHERE usersid = :user_id");
+    $check_stmt->bindParam(':user_id', $user_id);
+    $check_stmt->execute();
+    
+    if ($check_stmt->fetchColumn() > 0) {
+        // Update existing image
+        $update_stmt = $pdo->prepare("UPDATE image_users SET nom_image = :nom_image, image_path = :image_path 
+                                     WHERE usersid = :user_id");
+        $update_stmt->bindParam(':nom_image', $image_name);
+        $update_stmt->bindParam(':image_path', $image_path);
+        $update_stmt->bindParam(':user_id', $user_id);
+        $update_stmt->execute();
+    } else {
+        // Insert new image
+        $insert_stmt = $pdo->prepare("INSERT INTO image_users (nom_image, image_path, usersid) 
+                                     VALUES (:nom_image, :image_path, :user_id)");
+        $insert_stmt->bindParam(':nom_image', $image_name);
+        $insert_stmt->bindParam(':image_path', $image_path);
+        $insert_stmt->bindParam(':user_id', $user_id);
+        $insert_stmt->execute();
+    }
+}
 
-            if (!$exists) {
-                // Insère une nouvelle ligne si elle n'existe pas
-                $insert_stmt = $pdo->prepare("INSERT INTO first_login (user_id) VALUES (:user_id)");
-                $insert_stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
-                $insert_stmt->execute();
-            }
-
-            // Définir un indicateur de succès pour JavaScript
-            $password_changed = true;
-        } catch (PDOException $e) {
-            $error_message = "Erreur lors de la mise à jour du mot de passe: " . $e->getMessage();
-        }
+/**
+ * Update first login status
+ */
+function updateFirstLoginStatus($pdo, $user_id) {
+    $check_stmt = $pdo->prepare("SELECT COUNT(*) FROM first_login WHERE user_id = :user_id");
+    $check_stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+    $check_stmt->execute();
+    
+    if ($check_stmt->fetchColumn() == 0) {
+        $insert_stmt = $pdo->prepare("INSERT INTO first_login (user_id) VALUES (:user_id)");
+        $insert_stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $insert_stmt->execute();
     }
 }
 ?>
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -115,7 +224,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
     <style>
-        
+        /* Keep the existing CSS styles */
         @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
         :root {
             --primary: #1a56db;
@@ -152,13 +261,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .container {
@@ -564,12 +668,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 transform: scale(1);
                 opacity: 0.3;
             }
-
             50% {
                 transform: scale(1.05);
                 opacity: 0.5;
             }
-
             100% {
                 transform: scale(1);
                 opacity: 0.3;
@@ -593,32 +695,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin-bottom: 0;
         }
 
-        @media (max-width: 768px) {
-            .row {
-                flex-direction: column;
-            }
-
-            .col-md-4,
-            .col-md-6,
-            .col-md-12 {
-                flex: 0 0 100%;
-                max-width: 100%;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .welcome-message h1 {
-                font-size: 1.3rem;
-            }
-        }
-
         .omc {
             display: flex;
             flex-direction: row; 
             justify-content: space-evenly;
         }
+        
         .file-upload-container {
             position: relative;
             width: 30%;
@@ -663,26 +745,66 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             overflow: hidden;
             z-index: -1;
         }
+        
+        /* Added styles for image preview */
+        .image-preview {
+            margin-top: 10px;
+            width: 100%;
+            max-width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: none;
+            border: 3px solid var(--primary-light);
+        }
+        
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        @media (max-width: 768px) {
+            .row {
+                flex-direction: column;
+            }
+
+            .col-md-4,
+            .col-md-6,
+            .col-md-12 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .welcome-message h1 {
+                font-size: 1.3rem;
+            }
+            
+            .omc {
+                flex-direction: column;
+            }
+            
+            .file-upload-container {
+                width: 100%;
+                margin-left: 0;
+                margin-bottom: 20px;
+            }
+        }
     </style>
 </head>
 
 <body>
     <main id="dynamic-content">
         <div class="container">
-            <!-- Titre Principal -->
-            <h2 class="main-title">
-
-            </h2>
-
-            <!-- Carte principale -->
             <div class="card">
-                <!-- Message de bienvenue -->
+                <!-- Welcome message -->
                 <div class="welcome-message">
                     <h1>Salut <?php echo htmlspecialchars($user['prenom_user'] . ' ' . $user['nom_user']); ?> !</h1>
-                    <p>Bienvenue dans le système. Comme c'est votre première connexion, vous devez changer votre mot de passe pour des raisons de sécurité.</p>
-                </div>
-                <div>
-
+                    <p>Bienvenue dans le système. Comme c'est votre première connexion, vous devez changer votre mot de passe et ajouter une photo de profil.</p>
                 </div>
 
                 <div class="card-body">
@@ -697,13 +819,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <span><?php echo $error_message; ?></span>
                         </div>
                     <?php endif; ?>
+                    
+                    <?php if (!empty($success_message)): ?>
+                        <div class="alert alert-success">
+                            <i class='bx bx-check-circle'></i>
+                            <span><?php echo $success_message; ?></span>
+                        </div>
+                    <?php endif; ?>
 
-                    <form id="passwordForm" method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                    <form id="passwordForm" method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" enctype="multipart/form-data">
                         <div class="omc">
-
+                            <!-- Profile Photo Upload -->
                             <div class="file-upload-container">
-                                <label for="old_password" class="form-label">
-                                            Ajouter Votre Photo de Profil <span class="required-asterisk">*</span>
+                                <label for="imageUpload" class="form-label">
+                                    Ajouter Votre Photo de Profil <span class="required-asterisk">*</span>
                                 </label>
                                 <label for="imageUpload" class="file-upload-label">
                                     <div class="upload-icon">
@@ -713,11 +842,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                             <line x1="12" y1="3" x2="12" y2="15"></line>
                                         </svg>
                                     </div>
-                                    <div class="upload-text">Cliquez ici pour sélectionner une Photo</div>
+                                    <div class="upload-text" id="upload-text">Cliquez ici pour sélectionner une Photo</div>
                                 </label>
                                 <input type="file" id="imageUpload" name="image" accept="image/*" class="file-input">
+                                <div class="image-preview" id="imagePreview">
+                                    <img src="/placeholder.svg" alt="Aperçu de l'image" id="preview-img">
+                                </div>
+                                <span class="error-message"><?php echo $image_error; ?></span>
                             </div>
 
+                            <!-- Password Change Form -->
                             <div>
                                 <div class="col-md-12">
                                     <div class="form-group">
@@ -734,7 +868,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         <span class="error-message"><?php echo $old_password_error; ?></span>
                                     </div>
                                 </div>
-
 
                                 <div class="row">
                                     <div class="col-md-12">
@@ -777,6 +910,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         </div>
                                     </div>
                                 </div>
+                                
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="password-requirements">
@@ -813,33 +947,128 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             </div>
                         </div>
 
-
                         <div class="action-buttons">
                             <button type="submit" class="btn btn-primary">
-                                <i class='bx bx-check'></i> Changer mon mot de passe
+                                <i class='bx bx-check'></i> Enregistrer les modifications
                             </button>
                             <button type="button" class="btn btn-secondary" id="cancel-btn">
                                 <i class='bx bx-x'></i> Annuler
                             </button>
                         </div>
-
                     </form>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Variables PHP pour JavaScript -->
     <script>
-        // Passage des variables PHP au JavaScript
+        // Password changed flag
         var passwordChanged = <?php echo $password_changed ? 'true' : 'false'; ?>;
+        
+        // Image preview functionality
+        document.getElementById('imageUpload').addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const fileName = file.name;
+                document.getElementById('upload-text').textContent = fileName;
+                
+                // Show image preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview-img').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            } else {
+                document.getElementById('upload-text').textContent = 'Cliquez ici pour sélectionner une Photo';
+                document.getElementById('imagePreview').style.display = 'none';
+            }
+        });
+        
+        // Toggle password visibility
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function() {
+                const input = this.parentElement.querySelector('input');
+                const icon = this.querySelector('i');
+                
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('bx-hide');
+                    icon.classList.add('bx-show');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('bx-show');
+                    icon.classList.add('bx-hide');
+                }
+            });
+        });
+        
+        // Password strength meter
+        document.getElementById('new_password').addEventListener('input', function() {
+            const password = this.value;
+            const strengthMeter = document.getElementById('strength-meter-fill');
+            const strengthText = document.getElementById('strength-text');
+            
+            // Update password requirements
+            document.getElementById('length-requirement').querySelector('i').className = 
+                password.length >= 8 ? 'bx bx-check-circle requirement-valid' : 'bx bx-x-circle requirement-invalid';
+                
+            document.getElementById('uppercase-requirement').querySelector('i').className = 
+                /[A-Z]/.test(password) ? 'bx bx-check-circle requirement-valid' : 'bx bx-x-circle requirement-invalid';
+                
+            document.getElementById('lowercase-requirement').querySelector('i').className = 
+                /[a-z]/.test(password) ? 'bx bx-check-circle requirement-valid' : 'bx bx-x-circle requirement-invalid';
+                
+            document.getElementById('number-requirement').querySelector('i').className = 
+                /[0-9]/.test(password) ? 'bx bx-check-circle requirement-valid' : 'bx bx-x-circle requirement-invalid';
+                
+            document.getElementById('special-requirement').querySelector('i').className = 
+                /[^A-Za-z0-9]/.test(password) ? 'bx bx-check-circle requirement-valid' : 'bx bx-x-circle requirement-invalid';
+            
+            // Calculate password strength
+            let strength = 0;
+            if (password.length >= 8) strength += 1;
+            if (/[A-Z]/.test(password)) strength += 1;
+            if (/[a-z]/.test(password)) strength += 1;
+            if (/[0-9]/.test(password)) strength += 1;
+            if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+            
+            // Update strength meter
+            strengthMeter.className = 'strength-meter-fill';
+            if (strength <= 2) {
+                strengthMeter.classList.add('weak');
+                strengthText.textContent = 'Faible';
+            } else if (strength <= 4) {
+                strengthMeter.classList.add('medium');
+                strengthText.textContent = 'Moyen';
+            } else {
+                strengthMeter.classList.add('strong');
+                strengthText.textContent = 'Fort';
+            }
+        });
+        
+        // Cancel button
+        document.getElementById('cancel-btn').addEventListener('click', function() {
+            if (confirm('Êtes-vous sûr de vouloir annuler? Les modifications ne seront pas enregistrées.')) {
+                window.location.href = 'index.php';
+            }
+        });
+        
+        // Show success message if password was changed
+        if (passwordChanged) {
+            Swal.fire({
+                title: 'Succès!',
+                text: 'Votre mot de passe et votre photo de profil ont été mis à jour avec succès.',
+                icon: 'success',
+                confirmButtonText: 'Continuer',
+                confirmButtonColor: '#1a56db'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = 'index.php';
+                }
+            });
+        }
     </script>
-
-    <!-- Inclusion du fichier JavaScript externe -->
-    <script src="js/changepassword.js"></script>
 </body>
-
 </html>
-<?php
-require_once('../Template/footer.php');
-?>
+<?php require_once('../Template/footer.php'); ?>
