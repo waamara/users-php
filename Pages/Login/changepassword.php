@@ -620,7 +620,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .file-upload-container {
             position: relative;
             width: 30%;
-           margin-top: ;
+            margin-top: 60px; 
+            margin-left: -80px;
         }
 
         .file-upload-label {
@@ -708,7 +709,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                             <line x1="12" y1="3" x2="12" y2="15"></line>
                                         </svg>
                                     </div>
-                                    <div class="upload-text">Cliquez ici pour sélectionner un fichier</div>
+                                    <div class="upload-text">Cliquez ici pour sélectionner une Photo</div>
                                 </label>
                                 <input type="file" id="imageUpload" name="image" accept="image/*" class="file-input">
                             </div>
