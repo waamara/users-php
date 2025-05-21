@@ -616,6 +616,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             display: flex;
             flex-direction: row;
         }
+        .file-upload-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .file-upload-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .file-upload-label:hover {
+            background-color: #f3f4f6;
+        }
+
+        .upload-icon {
+            color: #3b82f6;
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .upload-text {
+            color: #6b7280;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .file-input {
+            position: absolute;
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            z-index: -1;
+        }
     </style>
 </head>
 
