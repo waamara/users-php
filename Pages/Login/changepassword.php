@@ -612,7 +612,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
 
-        .omc{
+        .omc {
             display: flex;
             flex-direction: row;
         }
@@ -654,9 +654,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <form id="passwordForm" method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
                         <div class="omc">
 
-                            <div>
-                                <label for="imageUpload">Upload an image:</label>
-                                <input type="file" id="imageUpload" name="image" accept="image/*">
+                            <div class="file-upload-container">
+                                <label for="imageUpload" class="file-upload-label">
+                                    <div class="upload-icon">
+                                        <!-- Simple CSS upload icon -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="17 8 12 3 7 8"></polyline>
+                                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                                        </svg>
+                                    </div>
+                                    <div class="upload-text">Cliquez ici pour sélectionner un fichier</div>
+                                </label>
+                                <input type="file" id="imageUpload" name="image" accept="image/*" class="file-input">
                             </div>
 
                             <div>
@@ -752,17 +762,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     </div>
                                 </div>
                             </div>
-                            </div>
+                        </div>
 
 
-                            <div class="action-buttons">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class='bx bx-check'></i> Changer mon mot de passe
-                                </button>
-                                <button type="button" class="btn btn-secondary" id="cancel-btn">
-                                    <i class='bx bx-x'></i> Annuler
-                                </button>
-                            </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-primary">
+                                <i class='bx bx-check'></i> Changer mon mot de passe
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="cancel-btn">
+                                <i class='bx bx-x'></i> Annuler
+                            </button>
+                        </div>
 
                     </form>
                 </div>
