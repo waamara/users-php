@@ -629,6 +629,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <h1>Salut <?php echo htmlspecialchars($user['prenom_user'] . ' ' . $user['nom_user']); ?> !</h1>
                     <p>Bienvenue dans le système. Comme c'est votre première connexion, vous devez changer votre mot de passe pour des raisons de sécurité.</p>
                 </div>
+                <div>
+
+                </div>
 
                 <div class="card-body">
                     <h5 class="card-subtitle">
@@ -644,111 +647,118 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <?php endif; ?>
 
                     <form id="passwordForm" method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="old_password" class="form-label">
-                                        <i class='bx bx-lock-alt'></i> Mot de passe actuel <span class="required-asterisk">*</span>
-                                    </label>
-                                    <div class="input-group">
-                                        <input type="password" id="old_password" name="old_password" class="form-control" placeholder="Entrez votre mot de passe actuel">
-                                        <i class='bx bx-lock-alt'></i>
-                                        <button type="button" class="toggle-password" tabindex="-1">
-                                            <i class='bx bx-hide'></i>
-                                        </button>
-                                    </div>
-                                    <span class="error-message"><?php echo $old_password_error; ?></span>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="omc">
 
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="new_password" class="form-label">
-                                        <i class='bx bx-lock'></i> Nouveau mot de passe <span class="required-asterisk">*</span>
-                                    </label>
-                                    <div class="input-group">
-                                        <input type="password" id="new_password" name="new_password" class="form-control" placeholder="Entrez votre nouveau mot de passe">
-                                        <i class='bx bx-lock'></i>
-                                        <button type="button" class="toggle-password" tabindex="-1">
-                                            <i class='bx bx-hide'></i>
-                                        </button>
-                                    </div>
-                                    <div class="password-strength">
-                                        <div class="strength-meter">
-                                            <div class="strength-meter-fill" id="strength-meter-fill"></div>
-                                        </div>
-                                        <span class="strength-text" id="strength-text">Force du mot de passe</span>
-                                    </div>
-                                    <span class="error-message"><?php echo $new_password_error; ?></span>
-                                </div>
+                            <div>
+                                <label for="imageUpload">Upload an image:</label>
+                                <input type="file" id="imageUpload" name="image" accept="image/*">
                             </div>
-                        </div>
 
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="confirm_password" class="form-label">
-                                        <i class='bx bx-lock-open'></i> Confirmer le mot de passe <span class="required-asterisk">*</span>
-                                    </label>
-                                    <div class="input-group">
-                                        <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Confirmez votre nouveau mot de passe">
-                                        <i class='bx bx-lock-open'></i>
-                                        <button type="button" class="toggle-password" tabindex="-1">
-                                            <i class='bx bx-hide'></i>
-                                        </button>
-                                    </div>
-                                    <span class="error-message"><?php echo $confirm_password_error; ?></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <label for="imageUpload">Upload an image:</label>
-                            <input type="file" id="imageUpload" name="image" accept="image/*">
-                        </div>                            
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="password-requirements">
-                                    <h5>Le mot de passe doit contenir :</h5>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="requirement-item" id="length-requirement">
-                                                <i class='bx bx-x-circle requirement-invalid'></i>
-                                                Au moins 8 caractères
-                                            </div>
-                                            <div class="requirement-item" id="uppercase-requirement">
-                                                <i class='bx bx-x-circle requirement-invalid'></i>
-                                                Au moins une lettre majuscule
-                                            </div>
-                                            <div class="requirement-item" id="lowercase-requirement">
-                                                <i class='bx bx-x-circle requirement-invalid'></i>
-                                                Au moins une lettre minuscule
-                                            </div>
+                            <div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="old_password" class="form-label">
+                                            <i class='bx bx-lock-alt'></i> Mot de passe actuel <span class="required-asterisk">*</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="password" id="old_password" name="old_password" class="form-control" placeholder="Entrez votre mot de passe actuel">
+                                            <i class='bx bx-lock-alt'></i>
+                                            <button type="button" class="toggle-password" tabindex="-1">
+                                                <i class='bx bx-hide'></i>
+                                            </button>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="requirement-item" id="number-requirement">
-                                                <i class='bx bx-x-circle requirement-invalid'></i>
-                                                Au moins un chiffre
+                                        <span class="error-message"><?php echo $old_password_error; ?></span>
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="new_password" class="form-label">
+                                                <i class='bx bx-lock'></i> Nouveau mot de passe <span class="required-asterisk">*</span>
+                                            </label>
+                                            <div class="input-group">
+                                                <input type="password" id="new_password" name="new_password" class="form-control" placeholder="Entrez votre nouveau mot de passe">
+                                                <i class='bx bx-lock'></i>
+                                                <button type="button" class="toggle-password" tabindex="-1">
+                                                    <i class='bx bx-hide'></i>
+                                                </button>
                                             </div>
-                                            <div class="requirement-item" id="special-requirement">
-                                                <i class='bx bx-x-circle requirement-invalid'></i>
-                                                Au moins un caractère spécial
+                                            <div class="password-strength">
+                                                <div class="strength-meter">
+                                                    <div class="strength-meter-fill" id="strength-meter-fill"></div>
+                                                </div>
+                                                <span class="strength-text" id="strength-text">Force du mot de passe</span>
                                             </div>
+                                            <span class="error-message"><?php echo $new_password_error; ?></span>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <div class="action-buttons">
-                            <button type="submit" class="btn btn-primary">
-                                <i class='bx bx-check'></i> Changer mon mot de passe
-                            </button>
-                            <button type="button" class="btn btn-secondary" id="cancel-btn">
-                                <i class='bx bx-x'></i> Annuler
-                            </button>
-                        </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="confirm_password" class="form-label">
+                                                <i class='bx bx-lock-open'></i> Confirmer le mot de passe <span class="required-asterisk">*</span>
+                                            </label>
+                                            <div class="input-group">
+                                                <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Confirmez votre nouveau mot de passe">
+                                                <i class='bx bx-lock-open'></i>
+                                                <button type="button" class="toggle-password" tabindex="-1">
+                                                    <i class='bx bx-hide'></i>
+                                                </button>
+                                            </div>
+                                            <span class="error-message"><?php echo $confirm_password_error; ?></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="password-requirements">
+                                            <h5>Le mot de passe doit contenir :</h5>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="requirement-item" id="length-requirement">
+                                                        <i class='bx bx-x-circle requirement-invalid'></i>
+                                                        Au moins 8 caractères
+                                                    </div>
+                                                    <div class="requirement-item" id="uppercase-requirement">
+                                                        <i class='bx bx-x-circle requirement-invalid'></i>
+                                                        Au moins une lettre majuscule
+                                                    </div>
+                                                    <div class="requirement-item" id="lowercase-requirement">
+                                                        <i class='bx bx-x-circle requirement-invalid'></i>
+                                                        Au moins une lettre minuscule
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="requirement-item" id="number-requirement">
+                                                        <i class='bx bx-x-circle requirement-invalid'></i>
+                                                        Au moins un chiffre
+                                                    </div>
+                                                    <div class="requirement-item" id="special-requirement">
+                                                        <i class='bx bx-x-circle requirement-invalid'></i>
+                                                        Au moins un caractère spécial
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+
+
+                            <div class="action-buttons">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class='bx bx-check'></i> Changer mon mot de passe
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="cancel-btn">
+                                    <i class='bx bx-x'></i> Annuler
+                                </button>
+                            </div>
+                            
                     </form>
                 </div>
             </div>
