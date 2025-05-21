@@ -614,13 +614,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         .omc {
             display: flex;
-            flex-direction: row;
+            flex-direction: row; 
+            justify-content: space-evenly;
         }
         .file-upload-container {
             position: relative;
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
+            width: 30%;
+           margin-top: ;
         }
 
         .file-upload-label {
