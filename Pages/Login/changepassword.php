@@ -115,7 +115,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
     <style>
-        /* Votre CSS ici - inchangé */
+        
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
         :root {
             --primary: #1a56db;
             --primary-light: #3b82f6;
@@ -164,6 +165,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0;
+            font-family: "Poppins", sans-serif;
         }
 
         .main-title {
