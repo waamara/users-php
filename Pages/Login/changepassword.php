@@ -611,6 +611,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 font-size: 1.3rem;
             }
         }
+
+        .omc{
+            display: flex;
+            flex-direction: row;
+        }
     </style>
 </head>
 
@@ -758,7 +763,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <i class='bx bx-x'></i> Annuler
                                 </button>
                             </div>
-                            
+
                     </form>
                 </div>
             </div>
