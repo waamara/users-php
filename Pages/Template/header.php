@@ -9,10 +9,12 @@
         /* Styles pour le profil utilisateur dans l'en-tête */
         .profile {
             display: flex;
-            align-items: center;
+            align-items: center; 
             gap: 10px;
             position: relative;
             cursor: pointer;
+            justify-content: flex-end; /* Add this line */
+            margin-left: auto; /* Add this line to push it to the right */
         }
         
         .profile-img {
@@ -53,7 +55,7 @@
         .profile-card {
             position: absolute;
             top: 50px;
-            right: 0;
+            right: 0; /* Make sure this is set to 0 */
             width: 280px;
             background: linear-gradient(135deg, #1775f1, #0c5fcd);
             border-radius: 10px;
@@ -100,7 +102,7 @@
         
         .profile-card-header {
             display: flex;
-            align-items: center;
+            align-items: end;
             gap: 15px;
             margin-bottom: 15px;
             position: relative;
@@ -423,6 +425,7 @@
           padding: 0 20px !important;
           display: flex !important;
           align-items: center !important;
+          justify-content: space-between !important; /* Add this line */
           grid-gap: 28px !important;
           position: sticky !important;
           top: 0 !important;
