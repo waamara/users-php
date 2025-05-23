@@ -46,7 +46,7 @@
             transform: translateX(-50%);
             font-weight: 600;
             font-size: 16px;
-            color: #1775f1;
+            color: gray; 
         }
         
         /* Styles pour la carte de profil */
@@ -553,17 +553,11 @@ if(isset($_SESSION['user_id'])) {
 <!-- MAIN CONTENT -->
 <section id="content">
     <nav>
-        <i class='bx bx-menu toggle-sidebar'></i>
-        <form action="#">
-            <div class="form-group">
-                <p>helkoooooo world</p>
-            </div>
-        </form>
-        
+        <i class='bx bx-menu toggle-sidebar'></i>      
         <!-- Affichage du nom d'utilisateur au centre -->
         <?php if(isset($_SESSION['user_id']) && !empty($fullName)): ?>
         <div class="user-welcome">
-            Bienvenue, <?php echo htmlspecialchars($fullName); ?>
+          <?php echo htmlspecialchars($fullName); ?>
         </div>
         <?php endif; ?>
       
@@ -598,7 +592,7 @@ if(isset($_SESSION['user_id'])) {
                     </a>
                     <a href="logout.php" class="profile-card-action">
                         <i class='bx bx-log-out'></i>
-                        <span>Déconnexion</span>
+                        <a href="../Login/logout.php">Déconnexion</a>
                     </a>
                 </div>
             </div>
