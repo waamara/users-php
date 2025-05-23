@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     // Validate form data
     $is_valid = validateFormData($old_password, $new_password, $confirm_password, $current_password, 
-                               $old_password_error, $new_password_error, $confirm_password_error);
+                                $old_password_error, $new_password_error, $confirm_password_error);
     
     // Validate image
     $image_valid = validateImage($_FILES['image'], $image_error);
@@ -961,12 +961,114 @@ function updateFirstLoginStatus($pdo, $user_id) {
         </div>
     </main>
 
-    <!-- Inclusion du script JavaScript -->
     <script>
         // Password changed flag
         var passwordChanged = <?php echo $password_changed ? 'true' : 'false'; ?>;
+        
+        // Image preview functionality
+        document.getElementById('imageUpload').addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const fileName = file.name;
+                document.getElementById('upload-text').textContent = fileName;
+                
+                // Show image preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview-img').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            } else {
+                document.getElementById('upload-text').textContent = 'Cliquez ici pour sélectionner une Photo';
+                document.getElementById('imagePreview').style.display = 'none';
+            }
+        });
+        
+        // Toggle password visibility
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function() {
+                const input = this.parentElement.querySelector('input');
+                const icon = this.querySelector('i');
+                
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('bx-hide');
+                    icon.classList.add('bx-show');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('bx-show');
+                    icon.classList.add('bx-hide');
+                }
+            });
+        });
+        
+        // Password strength meter
+        document.getElementById('new_password').addEventListener('input', function() {
+            const password = this.value;
+            const strengthMeter = document.getElementById('strength-meter-fill');
+            const strengthText = document.getElementById('strength-text');
+            
+            // Update password requirements
+            document.getElementById('length-requirement').querySelector('i').className = 
+                password.length >= 8 ? 'bx bx-check-circle requirement-valid' : 'bx bx-x-circle requirement-invalid';
+                
+            document.getElementById('uppercase-requirement').querySelector('i').className = 
+                /[A-Z]/.test(password) ? 'bx bx-check-circle requirement-valid' : 'bx bx-x-circle requirement-invalid';
+                
+            document.getElementById('lowercase-requirement').querySelector('i').className = 
+                /[a-z]/.test(password) ? 'bx bx-check-circle requirement-valid' : 'bx bx-x-circle requirement-invalid';
+                
+            document.getElementById('number-requirement').querySelector('i').className = 
+                /[0-9]/.test(password) ? 'bx bx-check-circle requirement-valid' : 'bx bx-x-circle requirement-invalid';
+                
+            document.getElementById('special-requirement').querySelector('i').className = 
+                /[^A-Za-z0-9]/.test(password) ? 'bx bx-check-circle requirement-valid' : 'bx bx-x-circle requirement-invalid';
+            
+            // Calculate password strength
+            let strength = 0;
+            if (password.length >= 8) strength += 1;
+            if (/[A-Z]/.test(password)) strength += 1;
+            if (/[a-z]/.test(password)) strength += 1;
+            if (/[0-9]/.test(password)) strength += 1;
+            if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+            
+            // Update strength meter
+            strengthMeter.className = 'strength-meter-fill';
+            if (strength <= 2) {
+                strengthMeter.classList.add('weak');
+                strengthText.textContent = 'Faible';
+            } else if (strength <= 4) {
+                strengthMeter.classList.add('medium');
+                strengthText.textContent = 'Moyen';
+            } else {
+                strengthMeter.classList.add('strong');
+                strengthText.textContent = 'Fort';
+            }
+        });
+        
+        // Cancel button
+        document.getElementById('cancel-btn').addEventListener('click', function() {
+            if (confirm('Êtes-vous sûr de vouloir annuler? Les modifications ne seront pas enregistrées.')) {
+                window.location.href = 'index.php';
+            }
+        });
+        
+        // Show success message if password was changed
+        if (passwordChanged) {
+            Swal.fire({
+                title: 'Succès!',
+                text: 'Votre mot de passe et votre photo de profil ont été mis à jour avec succès.',
+                icon: 'success',
+                confirmButtonText: 'Continuer',
+                confirmButtonColor: '#1a56db'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '../Role/admindash.php';
+                }
+            });
+        }
     </script>
-    <script src="js/changepassword.js"></script>
 </body>
 </html>
 <?php require_once('../Template/footer.php'); ?>
